@@ -36,6 +36,11 @@
 			    min-height:780px; 
 			    padding:5px;
             }     
+            
+            Box
+            {
+                width:6100px;
+            }
         
             html
             {
@@ -73,12 +78,7 @@
 		       margin: 0px 0px 0px 0px;
 		       padding: 0px 0px 0px 0px;   
 	        }
-		
-            th
-            {            
-            
-            }      
-      
+		     
             .MenuLinks
             {
            
@@ -110,6 +110,26 @@
 			    color:white;
 			    font-weight:bolder !important;
             }
+            
+            .AlternateRow
+            {
+                background-color:#F2F2F2;
+            }
+            
+            .InvsibleRow
+            {
+                border:0;
+                background-color:White;
+            }
+                
+            th
+            {            
+                background-color:#D2D2D2;
+                border-color:Black;
+                
+            }     
+            
+              
         </style>
     </head>
     <body>  
@@ -242,7 +262,7 @@
                             <td><%Response.Write(SecondaryHeading)%></td>
                         </tr>
                         <tr>
-                            <td class = "Menu" width="150px"  valign="top" >
+                            <td class = "Menu" width="150px" height = "700px" valign="top" >
                                 <asp:ContentPlaceHolder id="Menu" runat="server"/>
                             <%  Dim MyConnectionCheck As SqlConnection
                                 Dim MyCommandCheck As SqlCommand
@@ -280,12 +300,12 @@
                 <td width="815px" align="left" valign="top">                    
                     <form id = "EditPage" method="post" runat="server">  
                         <table>       
-                            <tr valign="top" > 
-                                <td class = "Box" valign="top" >                          
+                            <tr valign="top"> 
+                                <td width="400px" valign="top" >                          
                                     <asp:ContentPlaceHolder id="Box1" runat="server"/>
                                 </td>
 
-                                <td class = "Box" valign="top" >
+                                <td width="400px" valign="top">
                                     <asp:ContentPlaceHolder id="Box2" runat="server"/>    
                                 </td>
                             </tr>
@@ -294,12 +314,14 @@
                                 <td colspan="2">&nbsp;</td>
                             </tr>
 
-                            <tr valign="top" >
-                                <td class = "Box" valign="top" >
+                            <tr valign="top">
+                                <td valign="top">
                                     <asp:ContentPlaceHolder id="Box3" runat="server"/>    
                                 </td>
+                            </tr>
 
-                                <td class = "Box" valign="top"  >
+                            <tr>
+                                <td valign="top">
                                     <asp:ContentPlaceHolder id="Box4" runat="server"/>    
                                 </td>  
                             </tr>
