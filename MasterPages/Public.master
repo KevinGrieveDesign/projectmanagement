@@ -105,7 +105,7 @@
          
             Dim sql As String
             
-            LogoConn = New SqlConnection(System.Configuration.ConfigurationManager.ConnectionStrings("PEConnectionString").ToString())
+            LogoConn = New SqlConnection(System.Configuration.ConfigurationManager.ConnectionStrings("ProjectsConnection").ToString())
             LogoConn.Open()
             
             sql = "Select * from pages where pag_name = 'ProjectManagement' and pag_title = 'Public' "
@@ -114,7 +114,11 @@
             LogoReader = LogoCommand.ExecuteReader()
             
             While LogoReader.Read()%>
-                <tr><td  colspan = "2"><img alt = "<%response.write(LogoReader("pag_Menuitem")) %>" src="<%response.write(LogoReader("pag_title2")) %>" /></td></tr>
+                <tr>
+                    <td  colspan = "2">
+                        <img alt = "<%response.write(LogoReader("pag_Menuitem")) %>" src="<%response.write(LogoReader("pag_title2")) %>" />
+                    </td>
+                </tr>
         <%  End While
                     
             LogoReader.Close()

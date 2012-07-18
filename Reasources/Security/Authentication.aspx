@@ -7,11 +7,11 @@
     Dim SqlString As String
         
     If Session("UserID") <> 0 Then
-        AuthenticationCheckConn = New SqlConnection(System.Configuration.ConfigurationManager.ConnectionStrings("PEConnectionString").ToString())
+        AuthenticationCheckConn = New SqlConnection(System.Configuration.ConfigurationManager.ConnectionStrings("ProjectsConnection").ToString())
         AuthenticationCheckConn.Open()
                                                   
         SqlString = " SELECT * "
-        SqlString = SqlString & " FROM  pe_contact "
+        SqlString = SqlString & " FROM contact "
         SqlString = SqlString & " where con_id = '" & Session("UserID") & "'"
                                           
         AuthenticationCheckCommand = New SqlCommand(SqlString, AuthenticationCheckConn)
@@ -25,11 +25,11 @@
         If Not AuthenticationCheckReader.HasRows Then
             Session.Remove("UserID")
                 
-            Response.Redirect("PE_AUTHLogin.aspx?page=2&LoggedIn=Unknown&Auth=1")
+            Response.Redirect("Login.aspx?LoggedIn=Unknown")
         End If
                                           
         AuthenticationCheckReader.Close()
         AuthenticationCheckConn.Close()
     Else
-        Response.Redirect("PE_AUTHLogin.aspx?page=2&LoggedIn=Unknown&Auth=2")
+        Response.Redirect("Login.aspx?LoggedIn=Unknown")
     End If%>
