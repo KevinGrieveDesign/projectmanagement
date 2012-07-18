@@ -36,12 +36,7 @@
 			    min-height:780px; 
 			    padding:5px;
             }     
-            
-            Box
-            {
-                width:6100px;
-            }
-        
+           
             html
             {
                 font:11px Arial,Sans-Serif;  
@@ -315,13 +310,17 @@
                             </tr>
 
                             <tr valign="top">
-                                <td valign="top">
+                                <td valign="top" width="815px" colspan = "2">
                                     <asp:ContentPlaceHolder id="Box3" runat="server"/>    
                                 </td>
                             </tr>
 
                             <tr>
-                                <td valign="top">
+                                <td colspan="2">&nbsp;</td>
+                            </tr>
+
+                            <tr>
+                                <td valign="top" width="815px" colspan = "2">
                                     <asp:ContentPlaceHolder id="Box4" runat="server"/>    
                                 </td>  
                             </tr>
