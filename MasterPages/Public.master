@@ -1,0 +1,145 @@
+﻿<%@ Master Language="VB" %>
+<%@ Import Namespace="System.Data.SqlClient" %>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<script runat = "server" language = "vbscript" >
+
+</script>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head id="Head1" runat="server">
+        <title>Project Management</title>
+
+        <style type = "text/css" >          
+            .MainDiv
+            {  
+                max-width:970px !important; 	
+                margin: 0px 0px 0px 0px;
+			    padding: 0px 0px 0px 0px;  
+            }
+            
+            .LoginArea
+            {
+                padding: 30px 20px 20px 20px;
+                width:450px;
+                height: 200px;
+                background-color:#f0f8ff;    
+                /*border-style:groove;
+                border-width:medium; 
+                border-color: #25589D;*/
+            }                
+                
+            html
+            {
+                font:11px Arial,Sans-Serif;  
+            }
+        
+            H1
+		    {
+		        font-size:large;
+	            color: #25589D;
+			    FONT-FAMILY:Arial;	
+		    }
+		
+	        H2
+	        {
+		        font-size:small;
+	            color: #25589D;
+			    FONT-FAMILY:Arial;	
+	        }
+	    
+	        H3
+	        {
+		       font-size:small;
+	           color: #2558AB;
+		       FONT-FAMILY:Arial;	
+		       margin: 0px 0px 0px 0px;
+		       padding: 0px 0px 0px 0px;   
+	        }
+		
+            .TextBox
+            {
+                font:11px Arial,Sans-Serif;  
+            }
+        
+            a
+            {
+                color:#0066CC;
+            }  
+        
+            a:visited 
+            {
+                color: #0066CC;
+            }
+        
+        
+            .Button
+            {
+                background-color: #3991E6 !important;
+			    font-size:1em !important;
+			    height:22px !important;
+			    border:0px !important;
+			    line-height:22px !important;
+			    color:white;
+			    font-weight:bolder !important;
+            }
+       
+            .Message
+            {
+                color:Red;
+            }
+            
+            .FooterText
+            {
+                color:Gray;
+                font-size:11px;
+                
+            }
+        </style>
+    </head>
+    <body>  
+        <table class= "MainDiv"  width = "970px" align = "center">            
+        <%  Dim LogoConn As SqlConnection
+            Dim LogoCommand As SqlCommand
+            Dim LogoReader As SqlDataReader
+         
+            Dim sql As String
+            
+            LogoConn = New SqlConnection(System.Configuration.ConfigurationManager.ConnectionStrings("PEConnectionString").ToString())
+            LogoConn.Open()
+            
+            sql = "Select * from pages where pag_name = 'ProjectManagement' and pag_title = 'Public' "
+            
+            LogoCommand = New SqlCommand(sql, LogoConn)
+            LogoReader = LogoCommand.ExecuteReader()
+            
+            While LogoReader.Read()%>
+                <tr><td  colspan = "2"><img alt = "<%response.write(LogoReader("pag_Menuitem")) %>" src="<%response.write(LogoReader("pag_title2")) %>" /></td></tr>
+        <%  End While
+                    
+            LogoReader.Close()
+            LogoConn.Close() %>            
+        
+            <tr>
+                <td height = "40px">&nbsp;</td>
+            </tr>
+
+            <tr class = "MainDiv">
+                <td width="815px" align="center" valign="top">
+                    <asp:ContentPlaceHolder id="Content" runat="server"/>                                    
+                </td>
+            </tr> 
+            
+            <tr>
+                <td height= "80px">&nbsp;</td>
+            </tr>
+            
+            <tr>
+                <td class = "FooterText">
+                    <hr />
+                    ABN Number:
+                </td>
+            </tr>
+        </table>          
+    </body>
+</html>

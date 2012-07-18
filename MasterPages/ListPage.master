@@ -1,0 +1,298 @@
+﻿<%@ Master Language="VB" %>
+<%@ Import Namespace="System.Data.SqlClient" %>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<script runat = "server" language = "vbscript" >
+
+</script>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+    <head id="Head1" runat="server">
+        <title>Project Management</title>
+        <style type = "text/css" >
+            .Alternate
+            {
+                background-color: #f0f8ff;   
+            }
+        
+            .MainDiv
+            {
+                /*border-width:1px;
+                border-style:solid; 
+                border-color:grey;*/
+                float:center;
+                align :left;
+                max-width:970px !important; 	
+                margin: 0px 0px 0px 0px;
+			    padding: 0px 0px 0px 0px;  
+            }
+        
+            .Menu
+            {
+                background-color:#f0f8ff;     
+                float:left;
+			    wdith:100px !important; 	
+			    min-height:780px; 
+			    padding:5px;
+            }     
+        
+            html
+            {
+                font:11px Arial,Sans-Serif;  
+            }
+        
+            .MainHeader
+	        {	        
+		        font-size:x-large;
+	            color: #25589D;
+			    FONT-FAMILY:Helvetica;		
+			    margin: 0px 0px 0px 0px;
+			    padding: 0px 0px 0px 0px;   
+	        }
+		
+		    H1
+		    {
+		        font-size:large;
+	            color: #25589D;
+			    FONT-FAMILY:Arial;	
+		    }
+		
+	        H2
+	        {
+		        font-size:small;
+	            color: #25589D;
+			    FONT-FAMILY:Arial;	
+	        }
+	    
+	        H3
+	        {
+		       font-size:small;
+	           color: #2558AB;
+		       FONT-FAMILY:Arial;	
+		       margin: 0px 0px 0px 0px;
+		       padding: 0px 0px 0px 0px;   
+	        }
+		
+            th
+            {            
+            
+            }      
+      
+            .MenuLinks
+            {
+           
+            }   
+        
+            .TextBox
+            {
+                font:11px Arial,Sans-Serif;  
+            }
+        
+            a
+            {
+                color:#0066CC;
+            }  
+        
+            a:visited 
+            {
+                color: #0066CC;
+            }
+        
+        
+            .Button
+            {
+                background-color: #3991E6 !important;
+			    font-size:1em !important;
+			    height:22px !important;
+			    border:0px !important;
+			    line-height:22px !important;
+			    color:white;
+			    font-weight:bolder !important;
+            }
+        </style>
+    </head>
+    <body>  
+    <%  Dim GetPageHeaderReader As SqlDataReader
+        Dim GetPageHeaderCommand As SqlCommand
+        Dim GetPageHeaderConnection As SqlConnection
+        
+        Dim sql As String
+        
+        Dim PageURLArray() As String = Split(Request.Url.ToString(), "/")
+        Dim PageURL As String = PageURLArray(PageURLArray.Length - 1)
+        Dim PageName As String = Left(PageURL, PageURL.Length - 4)
+        Dim PageID As Integer
+    
+        PageID = 0
+    
+        GetPageHeaderConnection = New SqlConnection(System.Configuration.ConfigurationManager.ConnectionStrings("PEConnectionString").ToString())
+        GetPageHeaderConnection.Open()
+            
+        sql = "Select * from pages where pag_name = '" & PageName & "'"
+            
+        GetPageHeaderCommand = New SqlCommand(sql, GetPageHeaderConnection)
+        GetPageHeaderReader = GetPageHeaderCommand.ExecuteReader()
+            
+        While GetPageHeaderReader.Read()
+            PageID = GetPageHeaderReader("pag_id")
+        End While
+    
+        GetPageHeaderReader.Close()
+        GetPageHeaderConnection.Close()  %>
+
+        <table class= "MainDiv"   width = "970px" align = "center">
+            
+        <%  Dim LogoConn As SqlConnection
+            Dim LogoCommand As SqlCommand
+            Dim LogoReader As SqlDataReader
+    
+            Dim x As Integer
+             
+            LogoConn = New SqlConnection(System.Configuration.ConfigurationManager.ConnectionStrings("PEConnectionString").ToString())
+            LogoConn.Open()
+            
+            sql = "Select * from pages where pag_name = 'ProjectManagement' and pag_title = 'Private' "
+                
+            LogoCommand = New SqlCommand(sql, LogoConn)
+            LogoReader = LogoCommand.ExecuteReader()
+            
+            While LogoReader.Read()%>
+                <tr><td  colspan = "2"><img alt = "<%response.write(LogoReader("pag_Menuitem")) %>" src="<%response.write(LogoReader("pag_title2")) %>" /></td></tr>
+        <%  End While
+                    
+            LogoReader.Close()
+            LogoConn.Close() 
+            
+            Dim PageTiteleConn As SqlConnection
+            Dim PageTitleCommand As SqlCommand
+            Dim PageTitleReader As SqlDataReader
+            Dim HasHeader As Boolean
+            Dim SecondaryHeading As String
+                          
+            Dim Title1 As Boolean
+            Dim Title2 As Boolean
+                         
+            Title1 = False
+            Title2 = False
+            HasHeader = False
+            x = 0
+          
+            PageTiteleConn = New SqlConnection(System.Configuration.ConfigurationManager.ConnectionStrings("PEConnectionString").ToString())
+            PageTiteleConn.Open()
+          
+            sql = " SELECT * "
+            sql = sql & " FROM pages "
+         
+            If PageID = 0 Then
+                sql = sql & " where pag_id = '3'"
+            Else
+                sql = sql & " where pag_id = '" & PageID & "'"
+            End If
+                
+            PageTitleCommand = New SqlCommand(sql, PageTiteleConn)
+            PageTitleReader = PageTitleCommand.ExecuteReader()
+         
+            While PageTitleReader.Read()
+                If PageTitleReader.HasRows() And x = 0 Then
+                    If Not (PageTitleReader("pag_title") Is DBNull.Value) Then
+                        If PageTitleReader("pag_title") <> "" Then
+                            Title1 = True
+                        End If
+                    End If
+                                 
+                    If Not (PageTitleReader("pag_title2") Is DBNull.Value) Then
+                        If PageTitleReader("pag_title2") <> "" Then
+                            Title2 = True
+                        End If
+                    End If
+                                 
+                    If Title1 Or Title2 Then
+                        Response.Write("<tr><td colspan = '2' width = '970px'><br/>")
+                        HasHeader = True
+                    End If
+                End If
+                
+                If Not (PageTitleReader("pag_title") Is DBNull.Value) Then
+                    Response.Write("<span class = 'MainHeader'>" & PageTitleReader("pag_title") & "</span>")
+                End If
+             
+                If Not (PageTitleReader("pag_title2") Is DBNull.Value) Then
+                    SecondaryHeading = PageTitleReader("pag_title2")
+                End If
+                x = 1
+            End While
+                    
+            If HasHeader Then%>               
+                <asp:ContentPlaceHolder id="TitleBlock" runat="server"/>
+            <%  Response.Write("<hr></td></tr>")
+            End If
+        
+            PageTitleReader.Close()
+            PageTiteleConn.Close()%>
+
+            <tr class = "MainDiv">
+                <td width="150px"  valign="top" >
+                    <table>
+                        <tr>
+                            <td><%Response.Write(SecondaryHeading)%></td>
+                        </tr>
+                        <tr>
+                            <td class = "Menu" width="150px"  valign="top" >
+                                <asp:ContentPlaceHolder id="Menu" runat="server"/>
+                            <%  Dim MyConnectionCheck As SqlConnection
+                                Dim MyCommandCheck As SqlCommand
+                                Dim MyreaderCheck As SqlDataReader
+                           
+                                MyConnectionCheck = New SqlConnection(System.Configuration.ConfigurationManager.ConnectionStrings("PEConnectionString").ToString())
+                                MyConnectionCheck.Open()
+                                                  
+                                sql = " SELECT * "
+                                sql = sql & " FROM  contact "
+                                sql = sql & " where con_id = '" & Session("UserID") & "'"
+                                          
+                                MyCommandCheck = New SqlCommand(sql, MyConnectionCheck)
+                                MyreaderCheck = MyCommandCheck.ExecuteReader()
+                    
+                                While MyreaderCheck.Read()%>
+                                    <h3>Welcome,<br />
+                                <%  Response.Write(" " & MyreaderCheck("con_firstname") & " " & MyreaderCheck("con_lastname"))
+                                     
+                                    Session.Remove("UserID")
+                                    Session("UserID") = MyreaderCheck("Con_id")%>
+                                    </h3><br />
+                            <%  End While
+                     
+                                If Not MyreaderCheck.HasRows Then%>                                             
+                                    <h3>You are not Logged in </h3><br />                     
+                            <%  End If
+                                          
+                                MyreaderCheck.Close() %>
+                            </td>
+                        </tr>                    
+                    </table>
+                </td>
+     
+                <td width="815px" align="left" valign="top">
+                    <table height = "100%" v-align="top" >   
+                        <tr valign="top">
+                            <td valign="top">
+                                <asp:ContentPlaceHolder id="ToolBox" runat="server"/>    
+                            </td>
+                        </tr>                   
+
+                        <tr>
+                            <td>&nbsp;</td>
+                        </tr>
+
+                        <tr>
+                            <td>
+                                <asp:ContentPlaceHolder id="Content" runat="server"/>    
+                            </td>  
+                        </tr>
+                    </table>
+                </td>
+            </tr> 
+        </table>   
+    </body>
+</html>
