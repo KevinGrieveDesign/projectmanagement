@@ -1,4 +1,4 @@
-﻿<%@ Page Language="VB" AutoEventWireup="false" MasterPageFile ="MasterPages/EditPage.master" %>
+﻿<@ Page Language="VB" AutoEventWireup="false" MasterPageFile ="MasterPages/EditPage.master" %>
 
 <%@ Import Namespace="System.Data.SqlClient" %>
 
@@ -109,7 +109,11 @@
                     
                         LastEditedConnection.Close()%>
                                        
-                        <td><%  response.write(LastEditedBy)%>&nbsp;</td>
+                        <td>
+                        <%  Response.write(GetContactName(LastEditedBy))%>
+                            <br/>
+                        <%  response.write(LastEditedBy)%>&nbsp;
+                        </td>
                         <td><%  Response.Write(LastEditedDate)%>&nbsp;</td>
 
                     <%  Dim TicketCountConnection As SqlConnection
