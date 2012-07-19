@@ -1,4 +1,4 @@
-﻿<@ Page Language="VB" AutoEventWireup="false" MasterPageFile ="MasterPages/EditPage.master" %>
+﻿<%@ Page Language="VB" AutoEventWireup="false" MasterPageFile ="MasterPages/EditPage.master" %>
 
 <%@ Import Namespace="System.Data.SqlClient" %>
 
