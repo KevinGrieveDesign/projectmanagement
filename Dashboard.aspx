@@ -1,9 +1,12 @@
 ﻿<%@ Page Language="VB" AutoEventWireup="false" MasterPageFile ="MasterPages/EditPage.master" %>
 
 <%@ Import Namespace="System.Data.SqlClient" %>
+<%--
+<script language="VB" runat ="server" src = "Reasources/Security/SecurityModel.vb"/>
+<script language="VB" runat ="server" src = "Reasources/Security/Authentication.aspx"/>--%>
 
-<script language="VB" runat ="server" src = "Reasources/Security/SecurityModel.aspx.vb"/>
-<%--<script language="VB" runat ="server" src = "Reasources/Security/Authentication.aspx.vb"/>--%>
+<script language="VB" runat ="server" src = "Reasources/Data/Contact.vb"/>
+
 
 <asp:Content ID="Box1" ContentPlaceHolderID="Box1" Runat="Server">     	     
     <!--#include file="Reasources/Security/Authentication.aspx"-->       
@@ -66,7 +69,7 @@
                         Dim LastEditedBy As String
                         Dim LastEditedDate As String
                     
-                        LastEditedBy = "N/A"
+                        LastEditedBy = ""
                         LastEditedDate = "N/A"
                     
                         LastEditedConnection = New SqlConnection(System.Configuration.ConfigurationManager.ConnectionStrings("ProjectsConnection").ToString())
@@ -91,29 +94,9 @@
                         End While
 
                         LastEditedReader.Close()
-                    
-                        If LastEditedBy <> "N/A" Then
-                            sql = "Select * from contact "
-                            sql = sql & " Where con_id = '" & LastEditedBy & "'"
-                                                   
-                            LastEditedCommand = New SqlCommand(sql, LastEditedConnection)
-                            LastEditedReader = LastEditedCommand.ExecuteReader()
-                                
-                            While LastEditedReader.Read()
-                                LastEditedBy = "<a href = 'contact.aspx?contact=" & LastEditedReader("con_id") & "'>"
-                                LastEditedBy = LastEditedBy & LastEditedReader("con_firstName") & " " & LastEditedReader("con_lastName") & "</a>"
-                            End While
-                    
-                            LastEditedReader.Close()
-                        End If
-                    
                         LastEditedConnection.Close()%>
-                                       
-                        <td>
-                        <%  Response.write(GetContactName(LastEditedBy))%>
-                            <br/>
-                        <%  response.write(LastEditedBy)%>&nbsp;
-                        </td>
+
+                        <td><%  Response.Write(GetContactName(LastEditedBy))%> </td>
                         <td><%  Response.Write(LastEditedDate)%>&nbsp;</td>
 
                     <%  Dim TicketCountConnection As SqlConnection
@@ -129,27 +112,12 @@
                         BugCount = 0
                         FeatureCount = 0
                     
+                        BugID = GetLookupDetails(0, "ticket_type", "Bug")
+                        FeatureID = GetLookupDetails(0, "ticket_type", "Feature")
+                        
                         TicketCountConnection = New SqlConnection(System.Configuration.ConfigurationManager.ConnectionStrings("ProjectsConnection").ToString())
                         TicketCountConnection.Open()
-           
-                        sql = "Select * from lookup "
-                        sql = sql & " Where lup_parent = 'ticket_type'"
-                                                   
-                        TicketCountCommand = New SqlCommand(sql, TicketCountConnection)
-                        TicketCountReader = TicketCountCommand.ExecuteReader()
-                    
-                        While TicketCountReader.Read()
-                            If TicketCountReader("lup_child") = "Bug" Then
-                                BugID = TicketCountReader("lup_id")
-                            End If
                         
-                            If TicketCountReader("lup_child") = "Feature" Then
-                                FeatureID = TicketCountReader("lup_id")
-                            End If
-                        End While
-                                        
-                        TicketCountReader.Close()
-                    
                         sql = "Select * from ticket "
                         sql = sql & " Where tic_proid = '" & ProjectsReader("pro_id") & "'"
                                                    
@@ -249,57 +217,10 @@
 	                        x = x + 1%>	               
 	                    </td>
 
-                        <td>
-                        <%  Dim RelationshipNameConnection As SqlConnection
-                            Dim RelationshipNameCommand As SqlCommand
-                            Dim RelationshipNameReader As SqlDataReader
-           
-                            RelationshipNameConnection = New SqlConnection(System.Configuration.ConfigurationManager.ConnectionStrings("ProjectsConnection").ToString())
-                            RelationshipNameConnection.Open()
-            
-                            sql = "Select * from lookup "
-                            sql = sql & " Where lup_id = '" & RelationshipsReader("rel_typeId") & "'"
-           
-                            RelationshipNameCommand = New SqlCommand(sql, RelationshipNameConnection)
-                            RelationshipNameReader = RelationshipNameCommand.ExecuteReader()
-                        
-                            While RelationshipNameReader.Read()
-                                Response.Write(RelationshipNameReader("lup_child"))
-                            End While
-                        
-                            RelationshipNameReader.Close()
-                            RelationshipNameConnection.Close()%>&nbsp;
-                        </td>
-
-                        <td>
-                        <%  Dim ContactConnection As SqlConnection
-                            Dim ContactCommand As SqlCommand
-                            Dim ContactReader As SqlDataReader
-           
-                            ContactConnection = New SqlConnection(System.Configuration.ConfigurationManager.ConnectionStrings("ProjectsConnection").ToString())
-                            ContactConnection.Open()
-            
-                            sql = "Select * from contact "
-                            sql = sql & " Where con_id = '" & RelationshipsReader("rel_contactIdB") & "'"
-           
-                            ContactCommand = New SqlCommand(sql, ContactConnection)
-                            ContactReader = ContactCommand.ExecuteReader()
-                        
-                            While ContactReader.Read()
-                                If Not (ContactReader("con_organisationName") Is DBNull.Value) Then
-                                    Response.Write("<a href = 'contact.aspx?contact=" & ContactReader("con_id") & "'>" & ContactReader("con_organisationName") & "</a>")
-                                Else
-                                    Response.Write("<a href = 'contact.aspx?contact=" & ContactReader("con_id") & "'>" & ContactReader("con_firstname") & " " & ContactReader("con_lastname") & "</a>")
-                                End If
-                            End While
-                        
-                            ContactReader.Close()
-                            ContactConnection.Close()%>&nbsp;
-                        </td>
-
+                        <td><% Response.Write(GetLookupDetails(RelationshipsReader("rel_typeId")))%> </td>
+                        <td><% Response.Write(GetContactName(RelationshipsReader("rel_contactIdB")))%> </td>
                         <td><% Response.Write(String.Format("{0:dd MMM yyy}", RelationshipsReader("rel_startdate")))%>&nbsp;</td>
                         <td><% Response.Write(String.Format("{0:dd MMM yyy}", RelationshipsReader("rel_enddate")))%>&nbsp;</td>
-
                         <td><% Response.Write(RelationshipsReader("rel_description"))%>&nbsp;</td>
                     </tr>
             <%  End While
@@ -435,97 +356,11 @@
                         </td>
 
                         <td><% Response.Write("<a href = 'ticket.aspx?ticket=" & AssignedTicketsReader("tic_id") & "'>" & AssignedTicketsReader("tic_name") & "<a/>")%></td>
-
-                        <td>
-                        <%  Dim TicketStatusConnection As SqlConnection
-                            Dim TicketStatusCommand As SqlCommand
-                            Dim TicketStatusReader As SqlDataReader
-           
-                            TicketStatusConnection = New SqlConnection(System.Configuration.ConfigurationManager.ConnectionStrings("ProjectsConnection").ToString())
-                            TicketStatusConnection.Open()
-            
-                            sql = "Select * from lookup "
-                            sql = sql & " Where lup_id = '" & AssignedTicketsReader("tic_status") & "'"
-           
-                            TicketStatusCommand = New SqlCommand(sql, TicketStatusConnection)
-                            TicketStatusReader = TicketStatusCommand.ExecuteReader()
-                        
-                            While TicketStatusReader.Read()
-                                Response.Write(TicketStatusReader("lup_child"))
-                            End While
-                        
-                            TicketStatusReader.Close()
-                            TicketStatusConnection.Close()%>&nbsp;
-                        </td>
-
-                        <td>
-                        <%  Dim TicketPriorityConnection As SqlConnection
-                            Dim TicketPriorityCommand As SqlCommand
-                            Dim TicketPriorityReader As SqlDataReader
-           
-                            TicketPriorityConnection = New SqlConnection(System.Configuration.ConfigurationManager.ConnectionStrings("ProjectsConnection").ToString())
-                            TicketPriorityConnection.Open()
-            
-                            sql = "Select * from lookup "
-                            sql = sql & " Where lup_id = '" & AssignedTicketsReader("tic_priority") & "'"
-           
-                            TicketPriorityCommand = New SqlCommand(sql, TicketPriorityConnection)
-                            TicketPriorityReader = TicketPriorityCommand.ExecuteReader()
-                        
-                            While TicketPriorityReader.Read()
-                                Response.Write(TicketPriorityReader("lup_child"))
-                            End While
-                        
-                            TicketPriorityReader.Close()
-                            TicketPriorityConnection.Close()%>&nbsp;
-                        </td>
-
-                        <td>
-                        <%  Dim TicketAssignedToConnection As SqlConnection
-                            Dim TicketAssignedToCommand As SqlCommand
-                            Dim TicketAssignedToReader As SqlDataReader
-           
-                            TicketAssignedToConnection = New SqlConnection(System.Configuration.ConfigurationManager.ConnectionStrings("ProjectsConnection").ToString())
-                            TicketAssignedToConnection.Open()
-            
-                            sql = "Select * from contact "
-                            sql = sql & " Where con_id = '" & AssignedTicketsReader("tic_assignedTo") & "'"
-           
-                            TicketAssignedToCommand = New SqlCommand(sql, TicketAssignedToConnection)
-                            TicketAssignedToReader = TicketAssignedToCommand.ExecuteReader()
-                        
-                            While TicketAssignedToReader.Read()
-                                Response.Write("<a href = 'contact.aspx?contact=" & TicketAssignedToReader("con_id") & "'>" & TicketAssignedToReader("con_firstname") & " " & TicketAssignedToReader("con_lastname") & "<a/>")
-                            End While
-                        
-                            TicketAssignedToReader.Close()
-                            TicketAssignedToConnection.Close()%>&nbsp;
-                        </td>
-
+                        <td><% Response.Write(GetLookupDetails(AssignedTicketsReader("tic_status")))%> </td>
+                        <td><% Response.Write(GetLookupDetails(AssignedTicketsReader("tic_priority")))%> </td>
+                        <td><% Response.Write(GetContactName(AssignedTicketsReader("tic_assignedTo")))%> </td>
                         <td><% Response.Write(String.Format("{0:dd MMM yyy}", AssignedTicketsReader("tic_creationDate")))%>&nbsp;</td>
-                    
-                        <td>
-                        <%  Dim EditByConnection As SqlConnection
-                            Dim EditByCommand As SqlCommand
-                            Dim EditByReader As SqlDataReader
-           
-                            EditByConnection = New SqlConnection(System.Configuration.ConfigurationManager.ConnectionStrings("ProjectsConnection").ToString())
-                            EditByConnection.Open()
-            
-                            sql = "Select * from contact "
-                            sql = sql & " Where con_id = '" & AssignedTicketsReader("tic_editedby") & "'"
-           
-                            EditByCommand = New SqlCommand(sql, EditByConnection)
-                            EditByReader = EditByCommand.ExecuteReader()
-                        
-                            While EditByReader.Read()
-                                Response.Write("<a href = 'contact.aspx?contact=" & EditByReader("con_id") & "'>" & EditByReader("con_firstname") & " " & EditByReader("con_lastname") & "<a/>")
-                            End While
-                        
-                            EditByReader.Close()
-                            EditByConnection.Close()%>&nbsp;
-                        </td>
-
+                        <td><% Response.Write(GetContactName(AssignedTicketsReader("tic_editedby")))%> </td>
                         <td><% Response.Write(String.Format("{0:dd MMM yyy}", AssignedTicketsReader("tic_editedDate")))%>&nbsp;</td>
                     </tr>
             <%  End While
