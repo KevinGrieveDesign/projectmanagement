@@ -2,23 +2,23 @@
 
 <%@ Import Namespace="System.Data.SqlClient" %>
 <%--
-<script language="VB" runat ="server" src = "Reasources/Security/SecurityModel.vb"/>
-<script language="VB" runat ="server" src = "Reasources/Security/Authentication.aspx"/>--%>
+<script language="VB" runat ="server" src = "Scripts/SecurityModel.vb"/>
+<script language="VB" runat ="server" src = "es/Security/Authentication.aspx"/>--%>
 
-<script language="VB" runat ="server" src = "Reasources/Data/Contact.vb"/>
-
+<script language="VB" runat ="server" src = "Scripts/Contact.vb"/>
+<script language="VB" runat ="server" src = "Scripts/Security.vb"/>
+<script language="VB" runat ="server" src = "Scripts/General.vb"/>
 
 <asp:Content ID="Box1" ContentPlaceHolderID="Box1" Runat="Server">     	     
-    <!--#include file="Reasources/Security/Authentication.aspx"-->       
     <h1>Projects</h1>
-   
+   <%RenewSession() %>
     <table width = "100%" border = "1">
         <thead>
        	    <tr>
        	        <th colspan = "2" class = "InvsibleRow">&nbsp;</th>
        	        <th colspan = "2">Last Edited</th>
-       	        <th colspan = "2">Open Tickets</th>
        	    </tr>
+       	        <th colspan = "2">Open Tickets</th>
             <tr>
                 <th>#</th>
                 <th>Name</th>
@@ -34,6 +34,7 @@
             Dim ProjectsReader As SqlDataReader
            
             Dim sql As String
+            Dim OwnerOf As String = GetLookupDetails(0, "project_relationship_type", "Owner of")
 
             Dim x As Integer
             x = 1
@@ -43,7 +44,7 @@
            
             sql = "Select * from relationship "
             sql = sql & " Left Join project on pro_id = rel_contactIdB "
-            sql = sql & " Where rel_typeId = '11' and rel_contactIdA = '" & Session("UserID") & "'"
+            sql = sql & " Where rel_typeId = '" & OwnerOf & "' and rel_contactIdA = '" & Session("UserID") & "'"
            
             ProjectsCommand = New SqlCommand(sql, ProjectsConnection)
             ProjectsReader = ProjectsCommand.ExecuteReader()
@@ -115,6 +116,8 @@
                         BugID = GetLookupDetails(0, "ticket_type", "Bug")
                         FeatureID = GetLookupDetails(0, "ticket_type", "Feature")
                         
+                        '========Make this into the Projects.vb==============                       
+                        
                         TicketCountConnection = New SqlConnection(System.Configuration.ConfigurationManager.ConnectionStrings("ProjectsConnection").ToString())
                         TicketCountConnection.Open()
                         
@@ -138,8 +141,11 @@
                         End While
 
                         TicketCountReader.Close()
-                        TicketCountConnection.Close()%>
-                    
+                        TicketCountConnection.Close()
+                        
+                        '==========================================================
+                        %>
+                      
                         <td><% Response.Write(BugCount) %>&nbsp;</td>
                         <td><% Response.Write(FeatureCount)%>&nbsp;</td>
 	                </tr>
@@ -183,26 +189,8 @@
    
             RelationshipsConnection = New SqlConnection(System.Configuration.ConfigurationManager.ConnectionStrings("ProjectsConnection").ToString())
             RelationshipsConnection.Open()
-            
-            sql = "Select * from lookup "
-            sql = sql & " Where lup_parent = 'relationship_type'"
-           
-            RelationshipsCommand = New SqlCommand(sql, RelationshipsConnection)
-            RelationshipsReader = RelationshipsCommand.ExecuteReader()
-            
-            sql = ""
-            
-            While RelationshipsReader.Read()
-                If sql <> "" Then
-                    sql = sql & " or "
-                End If
-                    
-                sql = sql & " rel_typeId = '" & RelationshipsReader("lup_id") & "'"
-            End While
-                           
-            RelationshipsReader.Close()
-                                  
-            sql = "Select * from relationship Where (" & sql & ")"
+                        
+            sql = "Select * from relationship Where (" & SqlLookupBuilder("relationship_type", "rel_typeId", "or") & ")"
             sql = sql & " and rel_contactIdA = '" & Session("UserID") & "'"
             sql = sql & " and rel_isActive = 'True'"
             
@@ -210,8 +198,13 @@
             RelationshipsReader = RelationshipsCommand.ExecuteReader()
             
             If RelationshipsReader.HasRows Then
-                While RelationshipsReader.Read()%>
-                    <tr>
+                While RelationshipsReader.Read()
+                     If (x Mod 2 = 0) = False Then%>
+	                    <tr>
+                <%  Else%>
+	                    <tr class = "AlternateRow">
+                <%  end if %>
+
                         <td>
 	                    <%  Response.Write(x)
 	                        x = x + 1%>	               
@@ -278,25 +271,11 @@
             
                 Dim y As Integer
                 y = 1
-   
+
                 AssignedTicketsConnection = New SqlConnection(System.Configuration.ConfigurationManager.ConnectionStrings("ProjectsConnection").ToString())
                 AssignedTicketsConnection.Open()
-                            
-                sql = " Select * from lookup"
-                sql = sql & " where lup_parent = 'ticket_status' and lup_child <> 'Closed'"
                 
-                AssignedTicketsCommand = New SqlCommand(sql, AssignedTicketsConnection)
-                AssignedTicketsReader = AssignedTicketsCommand.ExecuteReader()
-            
-                While AssignedTicketsReader.Read()
-                    If OpenTicketTypes <> "" Then
-                        OpenTicketTypes = OpenTicketTypes & " or "
-                    End If
-                    
-                    OpenTicketTypes = OpenTicketTypes & " tic_status = '" & AssignedTicketsReader("lup_id") & "' "
-                End While
-                
-                AssignedTicketsReader.Close()
+                OpenTicketTypes = SqlLookupBuilder("ticket_status", "tic_status", "or", GetLookupDetails(0, "ticket_status", "Closed"))
                 
                 If x = 0 Then
                     sql = "Select * from ticket "
@@ -305,20 +284,12 @@
                     sql = "Select * from ticket "
                     sql = sql & " Where tic_creator = '" & Session("UserID") & "'"
                 Else
-                    sql = "Select * from lookup "
-                    sql = sql & " Where lup_parent = 'project_relationship_type'"
-                    sql = sql & " and lup_child = 'Watcher of' "
+                    Dim WatcherOf As String
+                    WatcherOf = GetLookupDetails(0, "project_relationship_type", "Watcher of")
                     
-                    AssignedTicketsCommand = New SqlCommand(sql, AssignedTicketsConnection)
-                    AssignedTicketsReader = AssignedTicketsCommand.ExecuteReader()
-            
-                    While AssignedTicketsReader.Read()
-                        sql = " Select * from relationship inner join ticket on tic_id = rel_contactIdB "
-                        sql = sql & " Where rel_contactIdA = '" & Session("UserID") & "'"
-                        sql = sql & " and rel_typeID = '" & AssignedTicketsReader("lup_id") & "' "
-                    End While
-                    
-                    AssignedTicketsReader.Close()
+                    sql = " Select * from relationship inner join ticket on tic_id = rel_contactIdB "
+                    sql = sql & " Where rel_contactIdA = '" & Session("UserID") & "'"
+                    sql = sql & " and rel_typeID = '" & WatcherOf & "'"
                 End If
                 
                 sql = sql & "and (" & OpenTicketTypes & ")"          
@@ -326,8 +297,13 @@
                 AssignedTicketsCommand = New SqlCommand(sql, AssignedTicketsConnection)
                 AssignedTicketsReader = AssignedTicketsCommand.ExecuteReader()
                 
-                While AssignedTicketsReader.Read()%>
-                    <tr>
+                While AssignedTicketsReader.Read()
+                     If (y Mod 2 = 0) = False Then%>
+	                    <tr>
+                <%  Else%>
+	                    <tr class = "AlternateRow">
+                <%  end if %>
+
                         <td>
 	                    <%  Response.Write(y)
 	                        y = y + 1%>	               

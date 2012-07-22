@@ -2,9 +2,7 @@
 <%@ Import Namespace="System.Data.SqlClient" %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
-<script runat = "server" language = "vbscript" >
-
-</script>
+<script language="VB" runat ="server" src = "Scripts/General.vb"/>
 
 <html xmlns="http://www.w3.org/1999/xhtml">
 
@@ -118,10 +116,6 @@
         Dim GetPageHeaderConnection As SqlConnection
         
         Dim sql As String
-        
-        Dim PageURLArray() As String = Split(Request.Url.ToString(), "/")
-        Dim PageURL As String = PageURLArray(PageURLArray.Length - 1)
-        Dim PageName As String = Left(PageURL, PageURL.Length - 4)
         Dim PageID As Integer
     
         PageID = 0
@@ -129,7 +123,7 @@
         GetPageHeaderConnection = New SqlConnection(System.Configuration.ConfigurationManager.ConnectionStrings("ProjectsConnection").ToString())
         GetPageHeaderConnection.Open()
             
-        sql = "Select * from pages where pag_name = '" & PageName & "'"
+        sql = "Select * from pages where pag_name = '" & GetPageName() & "'"
             
         GetPageHeaderCommand = New SqlCommand(sql, GetPageHeaderConnection)
         GetPageHeaderReader = GetPageHeaderCommand.ExecuteReader()
