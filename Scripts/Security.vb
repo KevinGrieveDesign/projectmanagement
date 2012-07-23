@@ -1,13 +1,15 @@
 ﻿'Params:
-'    Input: String, Integer, Integer
+'    Input: Optional String, Optionsl Integer, Optional Integer
 '    Output: Boolean
 '
 'This expects a string about what is being accessed i.e. trying to edit a ticket or display a menu item for a specific page
 'This will then look at the users security items to see if they have that item for either that page or project.
 'If they do then it will give True else it will give False
+'
+'This can also be used to see if the person has any access to a project by sending just the project ID
 
 Function AllowAction(ByVal Action As String, Optional ByVal ProjectId as integer = 0, Optional ByVal PageId as integer = 0) As Boolean
-    If Action <> "" and (ProjectId <> 0 or PageId <> 0)  Then
+    If ProjectId <> 0 or PageId <> 0 Then
         Dim CheckActionConnection as sqlconenction
         Dim CheckActionCommand as sqlCommand
         Dim CheckActionReader as sqldataReader
@@ -20,20 +22,26 @@ Function AllowAction(ByVal Action As String, Optional ByVal ProjectId as integer
         CheckActionConnection = New SqlConnection(System.Configuration.ConfigurationManager.ConnectionStrings("ProjectsConnection").ToString())
         CheckActionConnection.Open()
 
-        sql = "Select * from security_Items"
-        sql = sql & " where sit_securityItem = '" & Action & "'" 
-
-        CheckActionCommand = New SqlCommand(sql,CheckActionConenction)
-        CheckActionReader = CheckActionCommand.ExecuteReader()
-
-        while CheckActionReader.read()
-            SecurityItemId = CheckActionReader("sit_id")
-        End While
-
-        CheckActionReader.close()
-
+		If Action <> "" then 
+	        sql = "Select * from security_Items"
+	        sql = sql & " where sit_securityItem = '" & Action & "'" 
+	
+	        CheckActionCommand = New SqlCommand(sql,CheckActionConenction)
+	        CheckActionReader = CheckActionCommand.ExecuteReader()
+	
+	        while CheckActionReader.read()
+	            SecurityItemId = CheckActionReader("sit_id")
+	        End While
+	
+	        CheckActionReader.close()
+		End If
+		
         sql = "Select * from Contact_securityItems "
-        sql = sql & " where csit_id = '" & SecurityItemId & "'"
+        sql = sql & " where csit_conId = '" & Session("UserID") & "'"
+        
+        if Action <> "" then 
+        	sql = sql & " and csit_id = '" & SecurityItemId & "'"
+        end if
         
         if ProjectId <> 0 then
             sql = sql & " and csit_proId = '" & ProjectId & "'"
