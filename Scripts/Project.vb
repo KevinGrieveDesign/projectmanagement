@@ -28,8 +28,8 @@ Function GetProjectName(ByVal ProjectId as string) as string
     ProjectNameReader.Close()
     ProjectNameConnection.Close()
     
-    Reutrn ProjectName
-End Function﻿
+    Return ProjectName
+End Function
 
 'Params
 '	Input:

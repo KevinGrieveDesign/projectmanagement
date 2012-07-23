@@ -10,7 +10,7 @@
 
 Function AllowAction(ByVal Action As String, Optional ByVal ProjectId as integer = 0, Optional ByVal PageId as integer = 0) As Boolean
     If ProjectId <> 0 or PageId <> 0 Then
-        Dim CheckActionConnection as sqlconenction
+        Dim CheckActionConnection As sqlconnection
         Dim CheckActionCommand as sqlCommand
         Dim CheckActionReader as sqldataReader
         
@@ -26,7 +26,7 @@ Function AllowAction(ByVal Action As String, Optional ByVal ProjectId as integer
 	        sql = "Select * from security_Items"
 	        sql = sql & " where sit_securityItem = '" & Action & "'" 
 	
-	        CheckActionCommand = New SqlCommand(sql,CheckActionConenction)
+            CheckActionCommand = New SqlCommand(sql, CheckActionConnection)
 	        CheckActionReader = CheckActionCommand.ExecuteReader()
 	
 	        while CheckActionReader.read()
@@ -51,7 +51,7 @@ Function AllowAction(ByVal Action As String, Optional ByVal ProjectId as integer
         	Throw New ArgumentNullException("No Page ID/Project Id Given to AllowAction")
         end if 
 
-        CheckActionCommand = New SqlCommand(sql,CheckActionConenction)
+        CheckActionCommand = New SqlCommand(sql, CheckActionConnection)
         CheckActionReader = CheckActionCommand.ExecuteReader()
 
         If CheckActionReader.hasrows() then 
@@ -79,7 +79,7 @@ End Function
 
 Sub ViewPage(ByVal PageId as integer) 
 	If PageId <> 0 then
-		Dim ViewPageConnection as sqlconenction
+        Dim ViewPageConnection As sqlconnection
         Dim ViewPageCommand as sqlCommand
         Dim ViewPageReader as sqldataReader
         
@@ -123,7 +123,7 @@ End Sub
 'If there is no Session or record then it will seend you to the login page
 'If you dont have access to a page you will be sent here with a param of true, your session will be renewed and then to the dashboard
 
-Function RenewSession(Optional ByVal SendToDashboard as boolean = False)
+Function RenewSession(Optional ByVal SendToDashboard As Boolean = False) As Boolean
     Dim AuthenticationCheckConn As SqlConnection
     Dim AuthenticationCheckCommand As SqlCommand
     Dim AuthenticationCheckReader As SqlDataReader
@@ -148,22 +148,20 @@ Function RenewSession(Optional ByVal SendToDashboard as boolean = False)
 
         If Not AuthenticationCheckReader.HasRows Then
             Session.Remove("UserID")
-
-            Response.Redirect("Login.aspx?LoggedIn=Unknown")
         End If
 
         AuthenticationCheckReader.Close()
         AuthenticationCheckConn.Close()
-		
-		If SendToDashboard = True then
-			Response.Redirect("Dashboard.aspx?Access=Denied")
-		End If
-		
-		If Session("UserID") <> "" then 
-			Return True
-		else
-			Throw New ArgumentNullException("Could not renew Session")
-		End if
+
+        If SendToDashboard = True Then
+            Response.Redirect("Dashboard.aspx?Access=Denied")
+        End If
+
+        If Session("UserID") <> 0 Then
+            Return True
+        Else
+            Response.Redirect("Login.aspx?LoggedIn=Unknown")
+        End If
     Else
         Response.Redirect("Login.aspx?LoggedIn=Unknown")
     End If
