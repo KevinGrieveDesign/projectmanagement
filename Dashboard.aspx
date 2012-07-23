@@ -1,9 +1,6 @@
 ﻿<%@ Page Language="VB" AutoEventWireup="false" MasterPageFile ="MasterPages/EditPage.master" %>
 
 <%@ Import Namespace="System.Data.SqlClient" %>
-<%--
-<script language="VB" runat ="server" src = "Scripts/SecurityModel.vb"/>
-<script language="VB" runat ="server" src = "es/Security/Authentication.aspx"/>--%>
 
 <script language="VB" runat ="server" src = "Scripts/Contact.vb"/>
 <script language="VB" runat ="server" src = "Scripts/Security.vb"/>
@@ -16,9 +13,10 @@
         <thead>
        	    <tr>
        	        <th colspan = "2" class = "InvsibleRow">&nbsp;</th>
-       	        <th colspan = "2">Last Edited</th>
-       	    </tr>
+       	        <th colspan = "2">Last Edited</th>       	    
        	        <th colspan = "2">Open Tickets</th>
+   	        </tr>
+   	        
             <tr>
                 <th>#</th>
                 <th>Name</th>
@@ -208,6 +206,7 @@
                         <td>
 	                    <%  Response.Write(x)
 	                        x = x + 1%>	               
+
 	                    </td>
 
                         <td><% Response.Write(GetLookupDetails(RelationshipsReader("rel_typeId")))%> </td>
