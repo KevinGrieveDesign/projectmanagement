@@ -58,12 +58,9 @@
 		                        x = x + 1%>	               
 		                    </td>
 
-		                    <td><a href = "projects.aspx?project=<%  Response.Write(ProjectsReader("pro_id")) %>"><%  Response.Write(ProjectsReader("pro_name")) %></a></td>
+                            <td><%  response.write(GetProjectName(ProjectsReader("pro_id")) %>&nbsp;</td>	                    
 	                    
-	                    <%  '==========================================================
-	                    
-	                    
-	                    	'==================Put into Projects.vb====================
+	                    <%	'==================Put into Projects.vb====================
 	                    	Dim LastEditedConnection As SqlConnection
 	                        Dim LastEditedCommand As SqlCommand
 	                        Dim LastEditedReader As SqlDataReader
