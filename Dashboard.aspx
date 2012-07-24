@@ -58,7 +58,7 @@
 		                        x = x + 1%>	               
 		                    </td>
 
-                            <td><%  response.write(GetProjectName(ProjectsReader("pro_id")) %>&nbsp;</td>	                    
+                            <td><%  response.write(GetProjectName(ProjectsReader("pro_id"))) %>&nbsp;</td>	                    
 	                    
 	                    <%	'==================Put into Projects.vb====================
 	                    	Dim LastEditedConnection As SqlConnection
@@ -233,7 +233,9 @@
 <asp:Content ID="Box3" ContentPlaceHolderID="Box3" Runat="Server">     
     <h1>Open Tickets</h1>
 
-<%  For x = 0 To 2
+<%  Dim x as integer
+
+	For x = 0 To 2
         if x = 0 then%>
             <h2>Assigned</h2>
     <%  ElseIf x = 1 Then%>
