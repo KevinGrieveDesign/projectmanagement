@@ -8,7 +8,7 @@
 <script language="VB" runat ="server" src = "Scripts/Project.vb"/>
 <script language="VB" runat ="server" src = "Scripts/Ticket.vb"/>
 
-<asp:Content ID="Box1" ContentPlaceHolderID="Box1" Runat="Server">     
+<asp:Content ID="Content" ContentPlaceHolderID="Content" Runat="Server">     
 <%  if request("project") = "" then %>
 	
 	<h1>Projects</h1>
