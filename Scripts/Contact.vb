@@ -14,17 +14,17 @@ Sub AddContact()
 
 End Sub
 
-    'Params
-    '   Input: Integer, Integer, Integer, Optional Boolean, Optional String, Optional String, Optional String
-    '        : ContactIDA, ContactIDB, TypeId, isActive, StartDate, EndDate, Description
-    '   Output: String
-    '   
-    'This is to add a relationship. It needs the ContactIdA, ContactIdB and the relationshipTypeId
-    'Start Date, EndDate and the desciption are all optional 
-    '
-    'If the relationship is added properly it will return a string of "True"
-    'If the relationhsip alread exsists it will not add it and will return "Duplication"
-    'If it trys to add it and it doesnt get added then it will return Fasle
+'Params
+'   Input: Integer, Integer, Integer, Optional Boolean, Optional String, Optional String, Optional String
+'        : ContactIDA, ContactIDB, TypeId, isActive, StartDate, EndDate, Description
+'   Output: String
+'   
+'This is to add a relationship. It needs the ContactIdA, ContactIdB and the relationshipTypeId
+'Start Date, EndDate and the desciption are all optional 
+'
+'If the relationship is added properly it will return a string of "True"
+'If the relationhsip alread exsists it will not add it and will return "Duplication"
+'If it trys to add it and it doesnt get added then it will return Fasle
 
 Function AddRelationShip(ByVal ContactIdA As Integer, ByVal ContactIdB As Integer, ByVal RelationshipTypeId As Integer, Optional ByVal isActive As Boolean = True, Optional ByVal StartDate As String = "", Optional ByVal EndDate As String = "", Optional ByVal Decription As String = "")
     If ContactIdA = 0 Or ContactIdB = 0 Or RelationshipTypeId = 0 Then
@@ -68,12 +68,12 @@ Function AddRelationShip(ByVal ContactIdA As Integer, ByVal ContactIdB As Intege
     End If
 End Function
 
-    'Params
-    '   Input: Integer
-    '   Output: String
-    '
-    'This function takes the contact ID and give out the firstname & " " & lastname 
-    'If it is an organisation then it returns the organisation name
+'Params
+'   Input: Integer
+'   Output: String
+'
+'This function takes the contact ID and give out the firstname & " " & lastname 
+'If it is an organisation then it returns the organisation name
 
 Function GetContactName(ByVal ContactId As String) As String
     Dim ContactName As String
