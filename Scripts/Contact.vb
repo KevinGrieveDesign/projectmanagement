@@ -1,14 +1,14 @@
 'Imports System.Data.SqlClient
 
 'Public Class Contact
-    'Params
-    '   Input: String, String, Integer, String, String, Optional String
-    '        : Firstname, LastName, PrefixId, UserName, Password, Optional Phone
-    '        : ===From Form===
-    '   Output: -
-    '
-    'This Sub will take the contact Details (later will handle addresses, relationships and security) and will create a login for the user as well as the contact line
-    '
+'Params
+'   Input: String, String, Integer, String, String, Optional String
+'        : Firstname, LastName, PrefixId, UserName, Password, Optional Phone
+'        : ===From Form===
+'   Output: -
+'
+'This Sub will take the contact Details (later will handle addresses, relationships and security) and will create a login for the user as well as the contact line
+'
 
 Sub AddContact()
 
@@ -142,4 +142,41 @@ End Function
 
 Function AddAddress() As String
 
+End Function
+
+'Params
+'	Input: Integer, Integer
+'	Output: Boolean
+'
+'This takes the contact id that you want to check if the user has a relationship to and the relationship_type id 
+'it will output a true/false result if the user has that relationship or not
+
+Function CheckRelationship(ByVal ContactId as integer, Optional ByVal RelationshipTypeId as integer = 0) as boolean
+	Dim CheckRelationshipConnection As sqlConnection
+    Dim CheckRelationshipCommand As SqlCommand
+    Dim CheckRelationshipReader As SqlDataReader
+
+    Dim sql As String
+    Dim HasRelationship as boolean
+    Hasrelationship = false
+
+    CheckRelationshipConnection = New SqlConnection(System.Configuration.ConfigurationManager.ConnectionStrings("ProjectsConnection").ToString())
+    CheckRelationshipConnection.Open()
+
+    sql = "Select * from relationship "
+    sql = sql & " Where rel_contactIdA = '" & session("UserID") & "'"
+	sql = sql & " and rel_contactIdB = '" & ContactId & '"
+	sql = sql & " and rel_typeId = '" & RelationshipTypeId & "'"
+	
+    CheckRelationshipCommand = New SqlCommand(sql, CheckRelationshipConnection)
+    CheckRelationshipReader = CheckRelationshipCommand.ExecuteReader()
+
+    if CheckRelationshipReader.hasrows() then
+		Hasrelationship = true
+	End if
+	
+	CheckRelationshipReader.close()
+	CheckRelationshipConnection.close()
+	
+	return Hasrelationship
 End Function

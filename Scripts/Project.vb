@@ -21,7 +21,7 @@ Function GetProjectName(ByVal ProjectId as string) as string
     ProjectNameCommand = New SqlCommand(sql, ProjectNameConnection)
     ProjectNameReader = ProjectNameCommand.ExecuteReader()
     
-    If ProjectNameReader.hasrow() then
+    If ProjectNameReader.hasrows() then
     	While ProjectNameReader.Read()
     		ProjectName = "<a href = 'project.aspx?project=" & ProjectNameReader("pro_id") & "'>" & ProjectNameReader("pro_name") & "<a/>"
     	End While
@@ -49,10 +49,9 @@ Function ProjectLastEditedBy(ByVal ProjectId as integer) as String
 	Dim LastEditedByReader As SqlDataReader
             
     Dim LastEditedBy As String
-    Dim LastEditedByDate As String
+    Dim sql As String
 
     LastEditedBy = ""
-    LastEditedByDate = "N/A"
 
     LastEditedByConnection = New SqlConnection(System.Configuration.ConfigurationManager.ConnectionStrings("ProjectsConnection").ToString())
     LastEditedByConnection.Open()
@@ -89,6 +88,7 @@ Function ProjectLastEditedDate(ByVal ProjectId as integer) as string
 	Dim LastEditedReader As SqlDataReader
             
     Dim LastEditedDate As String
+    Dim sql as String
     LastEditedDate = "N/A"
 
     LastEditedConnection = New SqlConnection(System.Configuration.ConfigurationManager.ConnectionStrings("ProjectsConnection").ToString())
@@ -100,8 +100,8 @@ Function ProjectLastEditedDate(ByVal ProjectId as integer) as string
 	LastEditedReader = LastEditedCommand.ExecuteReader()
                         
     While LastEditedReader.Read()    
-         If Not (LastEditedByReader("tic_editedDate") Is DBNull.Value) Then
-            LastEditedByDate = LastEditedByReader("tic_editedDate")
+         If Not (LastEditedReader("tic_editedDate") Is DBNull.Value) Then
+            LastEditedDate = LastEditedReader("tic_editedDate")
             ' do a date diff here and get the latest one 
         End If
     End While
@@ -125,7 +125,7 @@ Function GetAllProjectTables(ByVal ProjectId as integer) as String
 	
 	sql = "Select * from project "
     sql = sql & " Left Join ticket on tic_proid = pro_id "
-    sql = sql & " Left Join ticket_notes on tic_id = not_ticId "
+    sql = sql & " Left Join ticket_note on tic_id = note_ticId "
 	'add more tables in here to search through when the system has been built for the other tabels
 	sql = sql & " Where pro_id = '" & ProjectId & "'"
 		
@@ -145,6 +145,7 @@ Function GetTicketCount(ByVal ProjectId as integer, Optional ByVal TicketTypeId 
 	Dim TicketCountReader As SqlDataReader
 	
 	DIm TicketCount as integer
+	Dim sql as String
 	TicketCount = 0 
 
 	TicketCountConnection = New SqlConnection(System.Configuration.ConfigurationManager.ConnectionStrings("ProjectsConnection").ToString())

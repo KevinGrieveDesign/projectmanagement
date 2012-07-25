@@ -67,7 +67,9 @@
 		                </tr>
                 <%  End If
                 End While
-            Else%>
+            End If
+            
+            If x = 1 then%>
                 <tr>
                     <td colspan = "6">You do not have access to any Projects</td>
                 </tr>    
@@ -152,108 +154,114 @@
 <%  Dim x as integer
 
 	For x = 0 To 2
-        if x = 0 then%>
-            <h2>Assigned</h2>
-    <%  ElseIf x = 1 Then%>
-            <h2>Added</h2>            
-    <%  else %>
-            <h2>Watched</h2>            
-    <%  End If%>
-
-        <table border = "1" width = "100%">
-            <thead>
-                <tr>
-                    <th colspan = "7" class = "InvsibleRow">&nbsp;</th>
-       	            <th colspan = "2">Last Edited</th>
-                </tr>
-            
-                <tr>
-                    <th>#</th>
-                    <th>Project</th>
-                    <th>Name</th>
-                    <th>Status</th>
-                    <th>Priority</th>
-                    <th>Assigned</th>
-                    <th>Created Date</th>
-                    <th>User</th>
-                    <th>Date</th>
-                </tr>        
-            </thead>
-            <tbody>
-            <%  Dim TicketsConnection As SqlConnection
-                Dim TicketsCommand As SqlCommand
-                Dim TicketsReader As SqlDataReader
-           
-                Dim sql As String
-                Dim OpenTicketTypes As String
-                OpenTicketTypes = ""
-            
-                Dim y As Integer
-                y = 1
-
-                TicketsConnection = New SqlConnection(System.Configuration.ConfigurationManager.ConnectionStrings("ProjectsConnection").ToString())
-                TicketsConnection.Open()
-                
-                OpenTicketTypes = SqlLookupBuilder("ticket_status", "tic_status", "or", GetLookupDetails(0, "ticket_status", "Closed"))
-                
-                If x = 0 Then
-                    sql = "Select * from ticket "
-                    sql = sql & " Where tic_assignedTo = '" & Session("UserID") & "' "
-                ElseIf x = 1 Then
-                    sql = "Select * from ticket "
-                    sql = sql & " Where tic_creator = '" & Session("UserID") & "'"
-                Else                   
-                    sql = " Select * from ticket inner join ticket_watched "
-                    sql = sql & " on tic_id = twat_ticId "
-                    sql = sql & " Where twat_id = '" & Session("UserID") & "'"
-                End If
-                
-                sql = sql & "and (" & OpenTicketTypes & ")"      
-                sql = sql & " order by tic_proId "                   
-                
-                TicketsCommand = New SqlCommand(sql, TicketsConnection)
-                TicketsReader = TicketsCommand.ExecuteReader()
-                
-                While TicketsReader.Read()
-                     If (y Mod 2 = 0) = False Then%>
+		Dim Employee as string
+		
+		Employee = CheckRelationship(5, GetLookupDetails(0, "relationship_type", "Employee of")
+		
+		If x = 0 and Employee = True then
+	        if x = 0 then%>
+	            <h2>Assigned</h2>
+	    <%  ElseIf x = 1 Then%>
+	            <h2>Added</h2>            
+	    <%  else %>
+	            <h2>Watched</h2>            
+	    <%  End If%>
+	
+	        <table border = "1" width = "100%">
+	            <thead>
+	                <tr>
+	                    <th colspan = "7" class = "InvsibleRow">&nbsp;</th>
+	       	            <th colspan = "2">Last Edited</th>
+	                </tr>
+	            
+	                <tr>
+	                    <th>#</th>
+	                    <th>Project</th>
+	                    <th>Name</th>
+	                    <th>Status</th>
+	                    <th>Priority</th>
+	                    <th>Assigned</th>
+	                    <th>Created Date</th>
+	                    <th>User</th>
+	                    <th>Date</th>
+	                </tr>        
+	            </thead>
+	            <tbody>
+	            <%  Dim TicketsConnection As SqlConnection
+	                Dim TicketsCommand As SqlCommand
+	                Dim TicketsReader As SqlDataReader
+	           
+	                Dim sql As String
+	                Dim OpenTicketTypes As String
+	                OpenTicketTypes = ""
+	            
+	                Dim y As Integer
+	                y = 1
+	
+	                TicketsConnection = New SqlConnection(System.Configuration.ConfigurationManager.ConnectionStrings("ProjectsConnection").ToString())
+	                TicketsConnection.Open()
+	                
+	                OpenTicketTypes = SqlLookupBuilder("ticket_status", "tic_status", "or", GetLookupDetails(0, "ticket_status", "Closed"))
+	                
+	                If x = 0 Then
+	                    sql = "Select * from ticket "
+	                    sql = sql & " Where tic_assignedTo = '" & Session("UserID") & "' "
+	                ElseIf x = 1 Then
+	                    sql = "Select * from ticket "
+	                    sql = sql & " Where tic_creator = '" & Session("UserID") & "'"
+	                Else                   
+	                    sql = " Select * from ticket inner join ticket_watched "
+	                    sql = sql & " on tic_id = twat_ticId "
+	                    sql = sql & " Where twat_conId = '" & Session("UserID") & "'"
+	                End If
+	                
+	                sql = sql & "and (" & OpenTicketTypes & ")"      
+	                sql = sql & " order by tic_proId "                   
+	                
+	                TicketsCommand = New SqlCommand(sql, TicketsConnection)
+	                TicketsReader = TicketsCommand.ExecuteReader()
+	                
+	                While TicketsReader.Read()
+	                     If (y Mod 2 = 0) = False Then%>
+		                    <tr>
+	                <%  Else%>
+		                    <tr class = "AlternateRow">
+	                <%  end if %>
+	
+	                        <td>
+		                    <%  Response.Write(y)
+		                        y = y + 1%>	               
+		                    </td>
+		                    
+	                    	<td><% Response.Write(GetProjectName(TicketsReader("tic_proId")))%> </td>                        
+	                        <td><% Response.Write(GetTicketName(TicketsReader("tic_id")))%></td>
+	                        <td><% Response.Write(GetLookupDetails(TicketsReader("tic_status")))%> </td>
+	                        <td><% Response.Write(GetLookupDetails(TicketsReader("tic_priority")))%> </td>
+	                        <td><% Response.Write(GetContactName(TicketsReader("tic_assignedTo")))%> </td>
+	                        <td><% Response.Write(String.Format("{0:dd MMM yyy}", TicketsReader("tic_creationDate")))%>&nbsp;</td>
+	                        <td><% Response.Write(GetContactName(TicketsReader("tic_editedby")))%> </td>
+	                        <td><% Response.Write(String.Format("{0:dd MMM yyy}", TicketsReader("tic_editedDate")))%>&nbsp;</td>
+	                    </tr>
+	            <%  End While
+	        
+	                TicketsReader.Close()
+	                TicketsConnection.Close()
+	                        
+	                If y = 1 Then%>
 	                    <tr>
-                <%  Else%>
-	                    <tr class = "AlternateRow">
-                <%  end if %>
-
-                        <td>
-	                    <%  Response.Write(y)
-	                        y = y + 1%>	               
-	                    </td>
-	                    
-                    	<td><% Response.Write(GetProjectName(TicketsReader("tic_proId")))%> </td>                        
-                        <td><% Response.Write(GetTicketName(TicketsReader("tic_id"))%></td>
-                        <td><% Response.Write(GetLookupDetails(TicketsReader("tic_status")))%> </td>
-                        <td><% Response.Write(GetLookupDetails(TicketsReader("tic_priority")))%> </td>
-                        <td><% Response.Write(GetContactName(TicketsReader("tic_assignedTo")))%> </td>
-                        <td><% Response.Write(String.Format("{0:dd MMM yyy}", TicketsReader("tic_creationDate")))%>&nbsp;</td>
-                        <td><% Response.Write(GetContactName(TicketsReader("tic_editedby")))%> </td>
-                        <td><% Response.Write(String.Format("{0:dd MMM yyy}", TicketsReader("tic_editedDate")))%>&nbsp;</td>
-                    </tr>
-            <%  End While
-        
-                TicketsReader.Close()
-                TicketsConnection.Close()
-                        
-                If y = 1 Then%>
-                    <tr>
-                    <%  If x = 0 Then%>
-                            <td colspan = "9">There are no Tickets Assigned to you</td>
-                    <% else if x = 1 %>
-                            <td colspan = "9">There are no Tickets Added by you</td>
-                    <%  Else%>
-                            <td colspan = "9">There are no Tickets Watched by you</td>
-                    <% end if %>
-                    </tr>
-            <%  end if %>
-            </tbody>        
-        </table>
-<%  Next%>           
+	                    <%  If x = 0 Then%>
+	                            <td colspan = "9">There are no Tickets Assigned to you</td>
+	                    <% else if x = 1 %>
+	                            <td colspan = "9">There are no Tickets Added by you</td>
+	                    <%  Else%>
+	                            <td colspan = "9">There are no Tickets Watched by you</td>
+	                    <% end if %>
+	                    </tr>
+	            <%  end if %>
+	            </tbody>        
+	        </table>
+	<%  End if
+    Next%>           
 </asp:Content>
 
 <asp:Content ID="Box4" ContentPlaceHolderID="Box4" Runat="Server">    
