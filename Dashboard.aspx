@@ -154,11 +154,11 @@
 <%  Dim x as integer
 
 	For x = 0 To 2
-		Dim Employee as string
+		Dim Employee as boolean
 		
-		Employee = CheckRelationship(5, GetLookupDetails(0, "relationship_type", "Employee of")
+		Employee = CheckRelationship(5, GetLookupDetails(0, "relationship_type", "Employee of"))
 		
-		If x = 0 and Employee = True then
+		If (x = 0 and Employee = True) or x > 0 then
 	        if x = 0 then%>
 	            <h2>Assigned</h2>
 	    <%  ElseIf x = 1 Then%>
@@ -265,14 +265,10 @@
 </asp:Content>
 
 <asp:Content ID="Box4" ContentPlaceHolderID="Box4" Runat="Server">    
- 
-<%--got to the security model here and work out what permissions they have... i should create a seperate file in the security folder to handle this
-
-what it should do is accept a param of secuirty ie where are we say are we allowed to edit a ticket then we will send editTicket
-it will reply with a tru or false if that is allowed--%>
+<%  if AllowAction("viewLogs",1) then %>
 
     <h1>Recent Activity</h1>    
     
-       
+<%  end if %>
 </asp:Content>
 

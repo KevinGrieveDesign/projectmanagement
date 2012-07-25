@@ -165,7 +165,7 @@ Function CheckRelationship(ByVal ContactId as integer, Optional ByVal Relationsh
 
     sql = "Select * from relationship "
     sql = sql & " Where rel_contactIdA = '" & session("UserID") & "'"
-	sql = sql & " and rel_contactIdB = '" & ContactId & '"
+	sql = sql & " and rel_contactIdB = '" & ContactId & "'"
 	sql = sql & " and rel_typeId = '" & RelationshipTypeId & "'"
 	
     CheckRelationshipCommand = New SqlCommand(sql, CheckRelationshipConnection)
