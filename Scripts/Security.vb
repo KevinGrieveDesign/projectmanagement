@@ -70,50 +70,59 @@ Function AllowAction(ByVal Action As String, Optional ByVal ProjectId as integer
 End Function
 
 'Params:
-'    Input: Intger
+'    Input: Intger, Optional String
 '    Output: Boolean
 '
 'The page id is sent to this function so it can check to see if you have access to the particular page. 
+'This allows the menu to access it and not get sent to a different location by the use of the Location variable
 'If you dont have access then you are sent to RenewSession and back to the dashboard once your session has been renewed
 'If you do, then carry on 
 
-Sub ViewPage(ByVal PageId as integer) 
-	If PageId <> 0 then
+Function ViewPage(ByVal PageId As Integer, Optional ByVal ProjectId As Integer = 0, Optional ByVal Location As String = "") As Boolean
+    If PageId <> 0 Then
         Dim ViewPageConnection As sqlconnection
-        Dim ViewPageCommand as sqlCommand
-        Dim ViewPageReader as sqldataReader
-        
-        Dim ViewPage as boolean
-      
-        Dim sql as string = "" 
-        
-		ViewPageConnection = New SqlConnection(System.Configuration.ConfigurationManager.ConnectionStrings("ProjectsConnection").ToString())
-        ViewPageConnection.Open()
-	
-		sql = "Select * from Contact_securityItems "
-        sql = sql & " where csit_pagId = '" & PageId & "'"         
+        Dim ViewPageCommand As sqlCommand
+        Dim ViewPageReader As sqldataReader
 
-        ViewPageCommand = New SqlCommand(sql,ViewPageConnection)
+        Dim ViewPageResult As Boolean
+
+        Dim sql As String = ""
+
+        ViewPageConnection = New SqlConnection(System.Configuration.ConfigurationManager.ConnectionStrings("ProjectsConnection").ToString())
+        ViewPageConnection.Open()
+
+        sql = "Select * from Contact_securityItems inner join security_items on csit_sitid = sit_id"
+        sql = sql & " where csit_conId = '" & Session("UserId") & "'"
+        sql = sql & " and sit_pagId = '" & PageId & "'"
+
+        If ProjectId <> 0 Then
+            sql = sql & " and csit_proId = '" & projectId & "'"
+        End If
+
+        ViewPageCommand = New SqlCommand(sql, ViewPageConnection)
         ViewPageReader = ViewPageCommand.ExecuteReader()
 
-        If ViewPageReader.hasrows() then 
-            ViewPage = True
-        else
-			ViewPage = False
-        End if  
-        
+        If ViewPageReader.hasrows() Then
+            ViewPageResult = True
+        Else
+            ViewPageResult = False
+        End If
+
         ViewPageReader.close()
         ViewPageConnection.close()
-        
-        If ViewPage = True then
-        	Return
-        else
-        	RenewSession(True)
+
+        If ViewPageResult = False And Location = "" Then
+            RenewSession(True)
+        Else
+            RenewSession()
+
+            Return ViewPageResult
         End If
-	else
-		Throw New ArgumentNullException("No Page Id Sent to ViewPage")
-	end if
-End Sub
+
+    Else
+        Throw New ArgumentNullException("No Page Id Sent to ViewPage")
+    End If
+End Function
 
 'Params
 '	Input: Optional Boolean

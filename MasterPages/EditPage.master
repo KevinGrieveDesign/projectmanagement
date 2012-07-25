@@ -3,6 +3,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
 <script language="VB" runat ="server" src = "../Scripts/General.vb"/>
+<script language="VB" runat ="server" src = "../Scripts/Security.vb"/>
 
 <html xmlns="http://www.w3.org/1999/xhtml">
 
@@ -118,35 +119,17 @@
             th
             {            
                 background-color:#D2D2D2;
-                border-color:Black;
-                
+                border-color:Black;                
             } 
         </style>
     </head>
     <body>  
-    <%  Dim GetPageHeaderReader As SqlDataReader
-        Dim GetPageHeaderCommand As SqlCommand
-        Dim GetPageHeaderConnection As SqlConnection
-        
+    <%  Dim PageID As Integer
         Dim sql As String
         
-        Dim PageID As Integer
-        PageID = 0
-    
-        GetPageHeaderConnection = New SqlConnection(System.Configuration.ConfigurationManager.ConnectionStrings("ProjectsConnection").ToString())
-        GetPageHeaderConnection.Open()
-            
-        sql = "Select * from pages where pag_name = '" & GetPageName() & "'"
-            
-        GetPageHeaderCommand = New SqlCommand(sql, GetPageHeaderConnection)
-        GetPageHeaderReader = GetPageHeaderCommand.ExecuteReader()
-            
-        While GetPageHeaderReader.Read()
-            PageID = GetPageHeaderReader("pag_id")
-        End While
-    
-        GetPageHeaderReader.Close()
-        GetPageHeaderConnection.Close()  %>
+        PageID = GetPageID()
+        ViewPage(PageID)
+        %>
 
         <table class= "MainDiv"   width = "970px" align = "center">
             
@@ -251,34 +234,37 @@
                         <tr>
                             <td class = "Menu" width="150px" height = "700px" valign="top" >
                                 <asp:ContentPlaceHolder id="Menu" runat="server"/>
-                            <%  Dim MyConnectionCheck As SqlConnection
-                                Dim MyCommandCheck As SqlCommand
-                                Dim MyreaderCheck As SqlDataReader
-                   
-                                MyConnectionCheck = New SqlConnection(System.Configuration.ConfigurationManager.ConnectionStrings("ProjectsConnection").ToString())
-                                MyConnectionCheck.Open()
+                            <%  Dim WelcomeConnection As SqlConnection
+                                Dim WelcomeCommand As SqlCommand
+                                Dim WelcomeReader As SqlDataReader
+                           
+                                WelcomeConnection = New SqlConnection(System.Configuration.ConfigurationManager.ConnectionStrings("ProjectsConnection").ToString())
+                                WelcomeConnection.Open()
                                                   
                                 sql = " SELECT * "
                                 sql = sql & " FROM  contact "
                                 sql = sql & " where con_id = '" & Session("UserID") & "'"
                                           
-                                MyCommandCheck = New SqlCommand(sql, MyConnectionCheck)
-                                MyreaderCheck = MyCommandCheck.ExecuteReader()
+                                WelcomeCommand = New SqlCommand(sql, WelcomeConnection)
+                                WelcomeReader = WelcomeCommand.ExecuteReader()
                     
-                                While MyreaderCheck.Read()%>
+                                While WelcomeReader.Read()%>
                                     <h3>Welcome,<br />
-                                <%  Response.Write(" " & MyreaderCheck("con_firstname") & " " & MyreaderCheck("con_lastname"))
+                                <%  Response.Write(" " & WelcomeReader("con_firstname") & " " & WelcomeReader("con_lastname"))
                                      
                                     Session.Remove("UserID")
-                                    Session("UserID") = MyreaderCheck("Con_id")%>
+                                    Session("UserID") = WelcomeReader("Con_id")%>
                                     </h3><br />
                             <%  End While
                      
-                                If Not MyreaderCheck.HasRows Then%>                                             
+                                If Not WelcomeReader.HasRows Then%>                                             
                                     <h3>You are not Logged in </h3><br />                     
                             <%  End If
                                           
-                                MyreaderCheck.Close() %>
+                                WelcomeReader.Close()
+                                WelcomeConnection.Close()
+                                
+                                BuildMenu()%>
                             </td>
                         </tr>                    
                     </table>

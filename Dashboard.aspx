@@ -9,13 +9,13 @@
 <script language="VB" runat ="server" src = "Scripts/Ticket.vb"/>
 
 <asp:Content ID="Box1" ContentPlaceHolderID="Box1" Runat="Server">     	     
-    <h1>Projects</h1>
-   <%RenewSession() %>
+    <br /><h1>Projects</h1>
+
     <table width = "100%" border = "1">
         <thead>
        	    <tr>
        	        <th colspan = "2" class = "InvsibleRow">&nbsp;</th>
-       	        <th colspan = "2">Last Edited</th>       	    
+       	        <th colspan = "2">Last Edited</th>       	     
        	        <th colspan = "2">Open Tickets</th>
        	    </tr>
        	        
@@ -82,7 +82,7 @@
 </asp:Content>
 
 <asp:Content ID="Box2" ContentPlaceHolderID="Box2" Runat="Server">     
-    <h1>Relationships</h1>     
+    <br /><h1>Relationships</h1>     
  
     <table border = "1" width = "100%">
         <thead>
