@@ -171,6 +171,7 @@
 	            <thead>
 	                <tr>
 	                    <th colspan = "7" class = "InvsibleRow">&nbsp;</th>
+	       	            <th colspan = "2">Added</th>
 	       	            <th colspan = "2">Last Edited</th>
 	                </tr>
 	            
@@ -180,8 +181,10 @@
 	                    <th>Name</th>
 	                    <th>Status</th>
 	                    <th>Priority</th>
-	                    <th>Assigned</th>
-	                    <th>Created Date</th>
+                        <th>Type</th>
+	                    <th>Assigned</th>    
+	                    <th>User</th>                                            
+	                    <th>Date</th>
 	                    <th>User</th>
 	                    <th>Date</th>
 	                </tr>        
@@ -237,7 +240,9 @@
 	                        <td><% Response.Write(GetTicketName(TicketsReader("tic_id")))%></td>
 	                        <td><% Response.Write(GetLookupDetails(TicketsReader("tic_status")))%> </td>
 	                        <td><% Response.Write(GetLookupDetails(TicketsReader("tic_priority")))%> </td>
+	                        <td><% Response.Write(GetLookupDetails(TicketsReader("tic_typeID")))%> </td>
 	                        <td><% Response.Write(GetContactName(TicketsReader("tic_assignedTo")))%> </td>
+	                        <td><% Response.Write(GetContactName(TicketsReader("tic_addedby")))%> </td>
 	                        <td><% Response.Write(String.Format("{0:dd MMM yyy}", TicketsReader("tic_addedDate")))%>&nbsp;</td>
 	                        <td><% Response.Write(GetContactName(TicketsReader("tic_editedby")))%> </td>
 	                        <td><% Response.Write(String.Format("{0:dd MMM yyy}", TicketsReader("tic_editedDate")))%>&nbsp;</td>
@@ -250,11 +255,11 @@
 	                If y = 1 Then%>
 	                    <tr>
 	                    <%  If x = 0 Then%>
-	                            <td colspan = "9">There are no Tickets Assigned to you</td>
+	                            <td colspan = "10">There are no Tickets Assigned to you</td>
 	                    <% else if x = 1 %>
-	                            <td colspan = "9">There are no Tickets Added by you</td>
+	                            <td colspan = "10">There are no Tickets Added by you</td>
 	                    <%  Else%>
-	                            <td colspan = "9">There are no Tickets Watched by you</td>
+	                            <td colspan = "10">There are no Tickets Watched by you</td>
 	                    <% end if %>
 	                    </tr>
 	            <%  end if %>

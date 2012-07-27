@@ -1,5 +1,5 @@
 ﻿'Params:
-'    Input: Optional String, Optionsl Integer, Optional Integer
+'    Input: Optional String, Optionsl Integer, Optional Integer, Optional Integer
 '    Output: Boolean
 '
 'This expects a string about what is being accessed i.e. trying to edit a ticket or display a menu item for a specific page
@@ -7,56 +7,111 @@
 'If they do then it will give True else it will give False
 '
 'This can also be used to see if the person has any access to a project by sending just the project ID
+'
+'If the USer is of the lowest user group (Project Reporter (3)) then the OnSelf  field is checked. This means that they have the editticket sec item for a project but they are only
+'a Project reporter. This combination then only allows them to edit their own things.
 
-Function AllowAction(ByVal Action As String, Optional ByVal ProjectId as integer = 0, Optional ByVal PageId as integer = 0) As Boolean
-    If ProjectId <> 0 or PageId <> 0 Then
+Function AllowAction(ByVal Action As String, Optional ByVal ProjectId As Integer = 0, Optional ByVal PageId As Integer = 0, Optional ByVal TicketAddedById As Integer = 0) As Boolean
+    If ProjectId <> 0 Or PageId <> 0 Then
         Dim CheckActionConnection As sqlconnection
-        Dim CheckActionCommand as sqlCommand
-        Dim CheckActionReader as sqldataReader
-        
-        Dim AllowAccessToAction as boolean = false
+        Dim CheckActionCommand As sqlCommand
+        Dim CheckActionReader As sqldataReader
 
-        Dim sql as string = "" 
-        Dim SecurityItemId as string = ""
-        
+        Dim AllowAccessToAction As Boolean = False
+        Dim ProjectReporter As Integer = 3 'Project Reporter - Lowest Level as of 27/07/2012
+        Dim GroupType As Integer = ProjectReporter
+
+        Dim sql As String = ""
+        Dim SecurityItemId As String = ""
+        Dim Onself As Boolean = False
+        Dim OnselfList As String
+
         CheckActionConnection = New SqlConnection(System.Configuration.ConfigurationManager.ConnectionStrings("ProjectsConnection").ToString())
         CheckActionConnection.Open()
 
-		If Action <> "" then 
-	        sql = "Select * from security_Items"
-	        sql = sql & " where sit_securityItem = '" & Action & "'" 
-	
+        If Action <> "" Then
+            sql = "Select * from security_Items"
+            sql = sql & " where sit_securityItem = '" & Action & "'"
+
             CheckActionCommand = New SqlCommand(sql, CheckActionConnection)
-	        CheckActionReader = CheckActionCommand.ExecuteReader()
-	
+            CheckActionReader = CheckActionCommand.ExecuteReader()
+
             While CheckActionReader.read()
                 SecurityItemId = CheckActionReader("sit_id")
             End While
-	
-	        CheckActionReader.close()
-		End If
-		
+
+            CheckActionReader.close()
+        End If
+
+        If ProjectId <> 0 Then
+            sql = "Select * from contact_securityGroup"
+            sql = sql & " where cgsit_conId = '" & Session("UserID") & "'"
+            sql = sql & " and cgsit_proId = '" & ProjectId & "'"
+
+            CheckActionCommand = New SqlCommand(sql, CheckActionConnection)
+            CheckActionReader = CheckActionCommand.ExecuteReader()
+
+            While CheckActionReader.read()
+                GroupType = CheckActionReader("cgsit_gsitId")
+            End While
+
+            CheckActionReader.close()
+        End If
+
+        If TicketAddedById <> 0 Then
+            sql = "Select * from security_Items"
+
+            CheckActionCommand = New SqlCommand(sql, CheckActionConnection)
+            CheckActionReader = CheckActionCommand.ExecuteReader()
+
+            While CheckActionReader.read()
+                If Not (CheckActionReader("sit_onSelf") Is DBNull.value) Then
+                    If CheckActionReader("sit_onSelf") = True Then
+                        If OnselfList <> "" Then
+                            OnselfList = OnselfList & ","
+                        End If
+
+                        OnselfList = OnselfList & CheckActionReader("sit_id")
+                    End If
+                End If
+            End While
+
+            CheckActionReader.close()
+        End If
+
         sql = "Select * from Contact_securityItems "
         sql = sql & " where csit_conId = '" & Session("UserID") & "'"
-        
-        if Action <> "" then 
+
+        If Action <> "" Then
             sql = sql & " and csit_sitId = '" & SecurityItemId & "'"
-        end if
-        
-        if ProjectId <> 0 then
+        End If
+
+        If ProjectId <> 0 Then
             sql = sql & " and csit_proId = '" & ProjectId & "'"
-        else if PageId <> 0
-            sql = sql & " and csit_pagId = '" & PageId & "'" 
-        else
-        	Throw New ArgumentNullException("No Page ID/Project Id Given to AllowAction")
-        end if 
+        ElseIf PageId <> 0 Then
+            sql = sql & " and csit_pagId = '" & PageId & "'"
+        Else
+            Throw New ArgumentNullException("No Page ID/Project Id Given to AllowAction")
+        End If
 
         CheckActionCommand = New SqlCommand(sql, CheckActionConnection)
         CheckActionReader = CheckActionCommand.ExecuteReader()
-       
+
         If CheckActionReader.hasrows() Then
             AllowAccessToAction = True
         Else
+            AllowAccessToAction = False
+        End If
+
+        Dim OnSelfItems() As String = Split(OnSelfList, ",")
+
+        For x = 0 To OnselfItems.length() - 1
+            If SecurityItemId = OnselfItems(x) Then
+                OnSelf = True
+            End If
+        Next
+
+        If TicketAddedById <> Session("UserID") And TicketAddedById <> 0 And GroupType = ProjectReporter And Onself = True Then
             AllowAccessToAction = False
         End If
 

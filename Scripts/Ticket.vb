@@ -23,7 +23,7 @@ Function GetTicketName(ByVal TicketId as string) as string
     
     If TicketNameReader.hasrows() then
     	While TicketNameReader.Read()
-    		TicketName = "<a href = 'project.aspx?project=" & TicketNameReader("tic_proId") & "&Ticket=" & TicketNameReader("tic_id") & "'>" & TicketNameReader("tic_name") & "<a/>"
+            TicketName = "<a href = 'project.aspx?project=" & TicketNameReader("tic_proId") & "&Ticket=" & TicketNameReader("tic_id") & "'>" & TicketNameReader("tic_name") & "</a>"
     	End While
     Else
     	TicketName = ""

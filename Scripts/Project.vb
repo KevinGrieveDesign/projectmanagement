@@ -76,41 +76,43 @@ Function ProjectLastEditedBy(ByVal ProjectId as integer) as String
 End Function
 
 'Params
-'	Input: Integer
+'	Input: Integer, Optional Boolean
 '	Output: String
 '
 'This takes the Project Id, then links to GetAllProjectTables Function to build the sql statement
 'Once it is searching on all the SQL tables then it will get the last editedDate and return it
 
-Function ProjectLastEditedDate(ByVal ProjectId as integer) as string
-	Dim LastEditedConnection As SqlConnection
+Function ProjectLastEditedDate(ByVal ProjectId As Integer, Optional ByVal Time As Boolean = False) As String
+    Dim LastEditedConnection As SqlConnection
     Dim LastEditedCommand As SqlCommand
-	Dim LastEditedReader As SqlDataReader
-            
+    Dim LastEditedReader As SqlDataReader
+
     Dim LastEditedDate As String
-    Dim sql as String
+    Dim sql As String
     LastEditedDate = "N/A"
 
     LastEditedConnection = New SqlConnection(System.Configuration.ConfigurationManager.ConnectionStrings("ProjectsConnection").ToString())
     LastEditedConnection.Open()
-   
+
     sql = GetAllProjectTables(ProjectId)
-	                           
-	LastEditedCommand = New SqlCommand(sql, LastEditedConnection)
-	LastEditedReader = LastEditedCommand.ExecuteReader()
-                        
-    While LastEditedReader.Read()    
-         If Not (LastEditedReader("tic_editedDate") Is DBNull.Value) Then
-            LastEditedDate = LastEditedReader("tic_editedDate")
+
+    LastEditedCommand = New SqlCommand(sql, LastEditedConnection)
+    LastEditedReader = LastEditedCommand.ExecuteReader()
+
+    While LastEditedReader.Read()
+        If Not (LastEditedReader("tic_editedDate") Is DBNull.Value) Then
+            If Time = True Then
+                LastEditedDate = String.Format("{0:dd MMM yyy &nb\sp;&nb\sp;&nb\sp; Ti\me: H:mm:ss}", LastEditedReader("tic_editedDate"))
+            Else
+                LastEditedDate = String.Format("{0:dd MMM yyy}", LastEditedReader("tic_editedDate"))
+            End If
             ' do a date diff here and get the latest one 
         End If
     End While
 
     LastEditedReader.Close()
     LastEditedConnection.Close()
-        
-    LastEditedDate = String.Format("{0:dd MMM yyy}", LastEditedDate)
-        
+
     Return LastEditedDate
 End Function
 
@@ -157,7 +159,9 @@ Function GetTicketCount(ByVal ProjectId as integer, Optional ByVal TicketTypeId 
     If TicketTypeId <> 0 then 
     	sql = sql & " and tic_typeId = '" & TicketTypeId & "'"
     End If
-                               
+
+    sql = sql & " and ( " & SqlLookupBuilder("ticket_status", "tic_status", "or", GetLookupDetails(0, "ticket_status", "Closed")) & ")"
+
     TicketCountCommand = New SqlCommand(sql, TicketCountConnection)
     TicketCountReader = TicketCountCommand.ExecuteReader()
             

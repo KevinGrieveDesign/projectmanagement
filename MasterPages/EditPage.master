@@ -131,7 +131,7 @@
         ViewPage(PageID)
         %>
 
-        <table class= "MainDiv"   width = "970px" align = "center">
+        <table class= "MainDiv"   width = "970px" align = "center" >
             
         <%  Dim LogoConn As SqlConnection
             Dim LogoCommand As SqlCommand

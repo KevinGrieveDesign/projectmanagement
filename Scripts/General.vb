@@ -178,7 +178,7 @@ Function SqlLookupBuilder(ByVal LookupParent As String, ByVal BuilderColumn As S
         sql = sql & " where lup_parent = '" & LookupParent & "'"
 
         If LookupChild <> "" Then
-            sql = sql & " and lup_child <> '" & LookupChild & "'"
+            sql = sql & " and lup_id <> '" & LookupChild & "'"
         End If
 
         SqlLookupBuilderCommand = New SqlCommand(sql, SqlLookupBuilderConnection)
@@ -199,6 +199,12 @@ Function SqlLookupBuilder(ByVal LookupParent As String, ByVal BuilderColumn As S
         Throw New ArgumentNullException("No input for Lookup Parent or target column")
     End If
 End Function
+
+'Params
+'   Input: None
+'   OutPut: None
+'
+'WHen this sub is called it will build the menu, taking into account each persons security items and the groupings for the menu
 
 Sub BuildMenu()
     Dim BuildMenuConneciton As SqlConnection
@@ -243,4 +249,133 @@ Sub BuildMenu()
     BuildMenuReader.Close()
     BuildMenuConneciton.Close()
 End Sub
+
+'Params
+'   Input: String, String, Optional String, Optional String
+'   Output: Nothing
+'
+'This takes the parent to get a lookup list, or a employee of Kevin Grieve Design (5)
+'This will output the results to the screen
+
+Function BuildDynamicDropDown(ByVal Parent As String, ByVal DropDownName As String, ByVal Selected As String, Optional ByVal Exclude As String = "", Optional ByVal PleaseSelect As Boolean = False, Optional ByVal EmployeeOnly As Boolean = False) As String
+    Dim BuildDropDownConneciton As SqlConnection
+    Dim BuildDropDownCommand As SqlCommand
+    Dim BuildDropDownReader As SqlDataReader
+
+    BuildDropDownConneciton = New SqlConnection(System.Configuration.ConfigurationManager.ConnectionStrings("ProjectsConnection").ToString())
+    BuildDropDownConneciton.Open()
+
+    Dim DropDown As String
+    Dim SelectedValue As String
+    Dim sql As String
+    Dim IsEmployee As Boolean = False
+
+    If EmployeeOnly = True Then
+        Dim GetContactConneciton As SqlConnection
+        Dim GetContactCommand As SqlCommand
+        Dim GetContactReader As SqlDataReader
+
+        GetContactConneciton = New SqlConnection(System.Configuration.ConfigurationManager.ConnectionStrings("ProjectsConnection").ToString())
+        GetContactConneciton.Open()
+
+        sql = " select * from contact"
+        sql = sql & " inner join relationship on con_id = rel_contactIdA"
+        sql = sql & " where rel_contactIDA = '" & Session("UserId") & "'"
+        sql = sql & " and rel_contactIdB = '5'"
+        sql = sql & " and rel_typeId = '" & GetLookUpDetails(0, "relationship_type", "Employee of") & "'"
+
+        GetContactCommand = New SqlCommand(sql, GetContactConneciton)
+        GetContactReader = GetContactCommand.ExecuteReader()
+
+        If GetContactReader.hasrows() Then
+            IsEmployee = True
+        End If
+
+        GetContactReader.close()
+        GetContactConneciton.close()
+    End If
+
+    If Parent = "Assigned" Then
+        Dim GetContactConneciton As SqlConnection
+        Dim GetContactCommand As SqlCommand
+        Dim GetContactReader As SqlDataReader
+
+        GetContactConneciton = New SqlConnection(System.Configuration.ConfigurationManager.ConnectionStrings("ProjectsConnection").ToString())
+        GetContactConneciton.Open()
+
+        sql = " select * from contact"
+        sql = sql & " inner join relationship on con_id = rel_contactIdA"
+        sql = sql & " where rel_typeId = '" & GetLookUpDetails(0, "relationship_type", "Employee of") & "'"
+        sql = sql & " and rel_contactIdB = '5'"
+
+        If Exclude <> "" Then
+            sql = sql & " and not(con_id in '" & Exclude & "')"
+        End If
+
+        sql = sql & " order by con_firstname"
+
+        BuildDropDownCommand = New SqlCommand(sql, BuildDropDownConneciton)
+        BuildDropDownReader = BuildDropDownCommand.ExecuteReader()
+
+        While BuildDropDownReader.Read()
+            If IsEmployee = True Or Selected = BuildDropDownReader("con_id") Or EmployeeOnly = False Then
+                DropDown = DropDown & "<option value = '" & BuildDropDownReader("con_id") & "'"
+
+                If Selected = BuildDropDownReader("con_id") Then
+                    DropDown = DropDown & "selected='selected'"
+                End If
+
+                sql = "Select * from Contact"
+                sql = sql & " where con_id = '" & BuildDropDownReader("con_id") & "'"
+
+                GetContactCommand = New SqlCommand(sql, GetContactConneciton)
+                GetContactReader = GetContactCommand.ExecuteReader()
+
+                While GetContactReader.Read()
+                    DropDown = DropDown & ">" & GetContactReader("con_firstName") & " " & GetContactReader("con_lastName") & "</option>"
+                End While
+
+                GetContactReader.close()
+            End If
+        End While
+
+        GetContactConneciton.close()
+    Else
+        sql = " select * from lookup "
+        sql = sql & " where lup_parent = '" & Parent & "'"
+
+        If Exclude <> "" Then
+            sql = sql & " and not(lup_id in '" & Exclude & "')"
+        End If
+
+        sql = sql & " order by lup_sequence, lup_child"
+
+        BuildDropDownCommand = New SqlCommand(sql, BuildDropDownConneciton)
+        BuildDropDownReader = BuildDropDownCommand.ExecuteReader()
+
+        While BuildDropDownReader.Read()
+            If IsEmployee = True Or Selected = BuildDropDownReader("lup_id") Or EmployeeOnly = False Then
+                DropDown = DropDown & "<option value = '" & BuildDropDownReader("lup_id") & "'"
+
+                If Selected = BuildDropDownReader("lup_id") Then
+                    DropDown = DropDown & "selected='selected'"
+                End If
+
+                DropDown = DropDown & ">" & BuildDropDownReader("lup_child") & "</option>"
+            End If
+        End While
+    End If
+
+    If PleaseSelect = True Then
+        DropDown = "<select name='" & DropDownName & "' class = 'TextBox'><option value ='' >--Please Choose--</option>" & DropDown & "</select>"
+    Else
+        DropDown = "<select name='" & DropDownName & "' class = 'TextBox'>" & DropDown & "</select>"
+    End If
+
+    BuildDropDownReader.close()
+
+    Response.write(DropDown)
+
+    BuildDropDownConneciton.close()
+End Function
 
