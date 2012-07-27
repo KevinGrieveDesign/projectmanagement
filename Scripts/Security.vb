@@ -29,9 +29,9 @@ Function AllowAction(ByVal Action As String, Optional ByVal ProjectId as integer
             CheckActionCommand = New SqlCommand(sql, CheckActionConnection)
 	        CheckActionReader = CheckActionCommand.ExecuteReader()
 	
-	        while CheckActionReader.read()
-	            SecurityItemId = CheckActionReader("sit_id")
-	        End While
+            While CheckActionReader.read()
+                SecurityItemId = CheckActionReader("sit_id")
+            End While
 	
 	        CheckActionReader.close()
 		End If
@@ -40,7 +40,7 @@ Function AllowAction(ByVal Action As String, Optional ByVal ProjectId as integer
         sql = sql & " where csit_conId = '" & Session("UserID") & "'"
         
         if Action <> "" then 
-        	sql = sql & " and csit_id = '" & SecurityItemId & "'"
+            sql = sql & " and csit_sitId = '" & SecurityItemId & "'"
         end if
         
         if ProjectId <> 0 then
@@ -53,17 +53,17 @@ Function AllowAction(ByVal Action As String, Optional ByVal ProjectId as integer
 
         CheckActionCommand = New SqlCommand(sql, CheckActionConnection)
         CheckActionReader = CheckActionCommand.ExecuteReader()
-
-        If CheckActionReader.hasrows() then 
+       
+        If CheckActionReader.hasrows() Then
             AllowAccessToAction = True
-        else
-			AllowAccessToAction = False
-        End if  
-        
+        Else
+            AllowAccessToAction = False
+        End If
+
         CheckActionReader.close()
         CheckActionConnection.close()
-        
-        return AllowAccessToAction
+
+        Return AllowAccessToAction
     Else
         Throw New ArgumentNullException("No Action or Project/Page Id given to AllowAction")
     End If

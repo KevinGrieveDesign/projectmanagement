@@ -208,7 +208,7 @@
 	                    sql = sql & " Where tic_assignedTo = '" & Session("UserID") & "' "
 	                ElseIf x = 1 Then
 	                    sql = "Select * from ticket "
-	                    sql = sql & " Where tic_creator = '" & Session("UserID") & "'"
+	                    sql = sql & " Where tic_addedBy = '" & Session("UserID") & "'"
 	                Else                   
 	                    sql = " Select * from ticket inner join ticket_watched "
 	                    sql = sql & " on tic_id = twat_ticId "
@@ -216,7 +216,7 @@
 	                End If
 	                
 	                sql = sql & "and (" & OpenTicketTypes & ")"      
-	                sql = sql & " order by tic_proId "                   
+	                sql = sql & " order by tic_addedDate "                   
 	                
 	                TicketsCommand = New SqlCommand(sql, TicketsConnection)
 	                TicketsReader = TicketsCommand.ExecuteReader()
@@ -238,7 +238,7 @@
 	                        <td><% Response.Write(GetLookupDetails(TicketsReader("tic_status")))%> </td>
 	                        <td><% Response.Write(GetLookupDetails(TicketsReader("tic_priority")))%> </td>
 	                        <td><% Response.Write(GetContactName(TicketsReader("tic_assignedTo")))%> </td>
-	                        <td><% Response.Write(String.Format("{0:dd MMM yyy}", TicketsReader("tic_creationDate")))%>&nbsp;</td>
+	                        <td><% Response.Write(String.Format("{0:dd MMM yyy}", TicketsReader("tic_addedDate")))%>&nbsp;</td>
 	                        <td><% Response.Write(GetContactName(TicketsReader("tic_editedby")))%> </td>
 	                        <td><% Response.Write(String.Format("{0:dd MMM yyy}", TicketsReader("tic_editedDate")))%>&nbsp;</td>
 	                    </tr>

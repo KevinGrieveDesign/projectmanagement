@@ -121,6 +121,48 @@
                 background-color:#D2D2D2;
                 border-color:Black;                
             } 
+            
+            .tabs
+        {
+            position:relative;
+            top:1px;
+            left:10px;
+        }
+        
+        .tab
+        {
+            border-style:solid;
+            border-width:1px;
+            border-color:black;
+            background-color:#eeeeee;
+            background-color:transparent;
+            
+            padding:2px;
+        }
+        
+        .selectedTab
+        {
+            background-color:white;
+            border-bottom:solid 1px white;
+            background-color:transparent;
+        }
+        
+        .tabContents
+        {
+            border:solid 1px black;
+            padding:10px;
+            background-color:white;
+            background-color:transparent;
+        } 
+        
+         .SecondaryTabContents
+        {
+            border:solid 1px black;
+            padding:10px;
+            background-color:white;
+            background-color:transparent;
+        } 
+        
         </style>
     </head>
     <body>  
@@ -268,25 +310,28 @@
                         </tr>                    
                     </table>
                 </td>
-     
+                
                 <td width="815px" align="left" valign="top">
-                    <table height = "100%" v-align="top" >   
-                        <tr valign="top">
-                            <td valign="top" width="815px">
-                                <asp:ContentPlaceHolder id="ToolBox" runat="server"/>    
-                            </td>
-                        </tr>                   
+                    <form id = "ListPage" method="post" runat="server">  
+                    
+                        <table height = "100%" v-align="top" >   
+                            <tr valign="top">
+                                <td valign="top" width="815px">
+                                    <asp:ContentPlaceHolder id="ToolBox" runat="server"/>    
+                                </td>
+                            </tr>                   
 
-                        <tr>
-                            <td>&nbsp;</td>
-                        </tr>
+                            <tr>
+                                <td>&nbsp;</td>
+                            </tr>
 
-                        <tr>
-                            <td valign="top" width="815px">
-                                <asp:ContentPlaceHolder id="Content" runat="server"/>    
-                            </td>  
-                        </tr>
-                    </table>
+                            <tr>
+                                <td valign="top" width="815px">
+                                    <asp:ContentPlaceHolder id="Content" runat="server"/>    
+                                </td>  
+                            </tr>
+                        </table>
+                    </form>
                 </td>
             </tr> 
         </table>   

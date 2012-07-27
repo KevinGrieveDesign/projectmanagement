@@ -117,7 +117,7 @@ Function GetContactName(ByVal ContactId As String) As String
     If ContactName <> "" Then
         ContactLink = "<a href = 'contact.aspx?contact=" & ContactId & "'>" & ContactName & "</a>"
     Else
-        ContactLink = "&nbsp;"
+        ContactLink = "N/A&nbsp;"
     End If
 
     Return ContactLink
@@ -151,32 +151,32 @@ End Function
 'This takes the contact id that you want to check if the user has a relationship to and the relationship_type id 
 'it will output a true/false result if the user has that relationship or not
 
-Function CheckRelationship(ByVal ContactId as integer, Optional ByVal RelationshipTypeId as integer = 0) as boolean
-	Dim CheckRelationshipConnection As sqlConnection
+Function CheckRelationship(ByVal ContactId As Integer, Optional ByVal RelationshipTypeId As Integer = 0) As Boolean
+    Dim CheckRelationshipConnection As sqlConnection
     Dim CheckRelationshipCommand As SqlCommand
     Dim CheckRelationshipReader As SqlDataReader
 
     Dim sql As String
-    Dim HasRelationship as boolean
-    Hasrelationship = false
+    Dim HasRelationship As Boolean
+    Hasrelationship = False
 
     CheckRelationshipConnection = New SqlConnection(System.Configuration.ConfigurationManager.ConnectionStrings("ProjectsConnection").ToString())
     CheckRelationshipConnection.Open()
 
     sql = "Select * from relationship "
     sql = sql & " Where rel_contactIdA = '" & session("UserID") & "'"
-	sql = sql & " and rel_contactIdB = '" & ContactId & "'"
-	sql = sql & " and rel_typeId = '" & RelationshipTypeId & "'"
-	
+    sql = sql & " and rel_contactIdB = '" & ContactId & "'"
+    sql = sql & " and rel_typeId = '" & RelationshipTypeId & "'"
+
     CheckRelationshipCommand = New SqlCommand(sql, CheckRelationshipConnection)
     CheckRelationshipReader = CheckRelationshipCommand.ExecuteReader()
 
-    if CheckRelationshipReader.hasrows() then
-		Hasrelationship = true
-	End if
-	
-	CheckRelationshipReader.close()
-	CheckRelationshipConnection.close()
-	
-	return Hasrelationship
+    If CheckRelationshipReader.hasrows() Then
+        Hasrelationship = True
+    End If
+
+    CheckRelationshipReader.close()
+    CheckRelationshipConnection.close()
+
+    Return Hasrelationship
 End Function
