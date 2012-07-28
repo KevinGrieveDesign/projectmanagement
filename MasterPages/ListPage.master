@@ -162,6 +162,13 @@
                 background-color:white;
                 background-color:transparent;
             } 
+            
+            .FooterText
+            {
+                color:Gray;
+                font-size:11px;
+                
+            }
         
         </style>
     </head>
@@ -307,7 +314,7 @@
                                 
                                 BuildMenu()%>
                             </td>
-                        </tr>                    
+                        </tr>    
                     </table>
                 </td>
                 
@@ -334,6 +341,12 @@
                     </form>
                 </td>
             </tr> 
+            <tr>
+                <td class = "FooterText" colspan = "2">
+                    <hr />
+                    ABN Number: 47 980 420 796
+                </td>
+            </tr>
         </table>   
     </body>
 </html>

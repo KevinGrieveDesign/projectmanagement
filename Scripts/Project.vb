@@ -62,9 +62,9 @@ Function ProjectLastEditedBy(ByVal ProjectId as integer) as String
 	LastEditedByReader = LastEditedByCommand.ExecuteReader()
                         
     While LastEditedByReader.Read()
-        If Not (LastEditedByReader("tic_editedBy") Is DBNull.Value) Then
-            LastEditedBy = LastEditedByReader("tic_editedBy")
-        End If
+        '    If Not (LastEditedByReader("tic_editedBy") Is DBNull.Value) Then
+        'LastEditedBy = LastEditedByReader("tic_editedBy")
+        'End If
     End While
 
     LastEditedByReader.Close()

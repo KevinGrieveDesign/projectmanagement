@@ -121,6 +121,13 @@
                 background-color:#D2D2D2;
                 border-color:Black;                
             } 
+            
+            .FooterText
+            {
+                color:Gray;
+                font-size:11px;
+                
+            }
         </style>
     </head>
     <body>  
@@ -306,6 +313,12 @@
                     </form>
                 </td>
             </tr> 
+            <tr>
+                <td class = "FooterText" colspan = "2">
+                    <hr />
+                    ABN Number: 47 980 420 796
+                </td>
+            </tr>
         </table> 
     </body>
 </html>

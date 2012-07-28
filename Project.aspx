@@ -208,6 +208,52 @@
             response.redirect("Project.aspx?project=" & request("project") & "&ticket=" & request("ticket") & "&Edit=Note" & "&NoteId=" & request("NoteId"))        
         end if
     End Sub
+
+    sub AddNewTicket()
+        If Request.Form("AddTicket") = "Add New Ticket" Then
+            response.redirect("Project.aspx?project=" & request("project") & "&AddNew=Ticket")
+        end if
+
+         If Request.Form("SaveTicket") = "Save Ticket" Then
+            If Request("Description") <> "" or request("TicketName") <> "" then
+                Dim SaveNoteConnection As SqlConnection
+                Dim SaveNoteCommand As SqlCommand
+                Dim SaveNote as integer
+           
+                Dim sql As String
+            
+                SaveNoteConnection = New SqlConnection(System.Configuration.ConfigurationManager.ConnectionStrings("ProjectsConnection").ToString())
+                SaveNoteConnection.Open()
+                   
+                sql = "Insert ticket (tic_proId, tic_name, tic_assignedTo, tic_addedBy, tic_addedDate, tic_typeID, tic_status, tic_priority, tic_description)"
+                sql = sql & " Values( '" & Request("project") & "' , '" & request("TicketName") & "', '" & request("AssignedToDropDown") & "' , '" & session("UserID") & "', getdate(), "
+                sql = sql & " '" & request("TypeDropDown") & "', '" & GetLookupDetails(0, "ticket_status", "New") & "' , '" & Request("PriorityDropDown") & "', '" & request("description") & "')"
+           
+                SaveNoteCommand = New SqlCommand(sql, SaveNoteConnection)
+                SaveNote = SaveNoteCommand.ExecuteNonQuery()
+            
+                SaveNoteConnection.close()
+
+                response.redirect("project.aspx?project=" & request("project") & "&ticket=" & request("ticket") & "&Saved=Ticket")
+            else
+                Dim RedirectString as string
+
+                RedirectString =  "Project.aspx?project=" & request("project") & "&AddNew=Ticket"
+                
+                if Request("TicketName") <> "" then RedirectString = RedirectString & "&RequestTicketName=" & Request("TicketName")
+                if Request("AssignedToDropDown") <> "" then RedirectString = RedirectString & "&RequestAssignedToDropDown=" & Request("AssignedToDropDown")
+                if Request("TypeDropDown") <> "" then RedirectString = RedirectString & "&RequestTypeDropDown=" & Request("TypeDropDown")
+                if Request("PriorityDropDown") <> "" then RedirectString = RedirectString & "&RequestPriorityDropDown=" & Request("PriorityDropDown")
+                if Request("Description") <> "" then RedirectString = RedirectString & "&RequestDescription=" & Request("Description")
+                RedirectString = RedirectString & "&FieldBlank=True" 
+
+                response.redirect(RedirectString)        
+            end if
+        end if
+    End Sub
+
+
+
     
  </script>  
 
@@ -275,7 +321,7 @@
 		                        </td>
 
                                 <td><%  Response.write(GetProjectName(ProjectsReader("pro_id"))) %>&nbsp;</td>	                    
-	                            <td><%  Response.Write(ProjectLastEditedBy(ProjectsReader("pro_id")))%> </td>
+	                            <td><%  Response.Write(ProjectLastEditedBy(ProjectsReader("pro_id")))%></td>
 	                            <td><%  Response.Write(ProjectLastEditedDate(ProjectsReader("pro_id")))%>&nbsp;</td>                        
 	                            <td><%  Response.Write(GetTicketCount(ProjectsReader("pro_id"), GetLookupDetails(0, "ticket_type", "Bug"))) %>&nbsp;</td>
 	                            <td><%  Response.Write(GetTicketCount(ProjectsReader("pro_id"), GetLookupDetails(0, "ticket_type", "Feature"))) %>&nbsp;</td>
@@ -314,7 +360,6 @@
                     <asp:MenuItem Text="Pages"  Value="2"  />
                     <asp:MenuItem Text="Repository" Value="3" />  
                     <asp:MenuItem Text="Features" Value="4" /> 
-                    <asp:MenuItem Text="Contact Us" Value="5" /> 
                 </Items>  
             </asp:Menu>
    
@@ -439,15 +484,27 @@
 		                                        y = y + 1%>	               
 		                                    </td>
 		                    
-	                                        <td><% Response.Write(GetTicketName(TicketsReader("tic_id")))%></td>
-	                                        <td><% Response.Write(GetLookupDetails(TicketsReader("tic_status")))%> </td>
-	                                        <td><% Response.Write(GetLookupDetails(TicketsReader("tic_priority")))%> </td>
-	                                        <td><% Response.Write(GetLookupDetails(TicketsReader("tic_typeID")))%> </td>
-	                                        <td><% Response.Write(GetContactName(TicketsReader("tic_assignedTo")))%> </td>
-	                                        <td><% Response.Write(GetContactName(TicketsReader("tic_addedby")))%> </td>
-	                                        <td><% Response.Write(String.Format("{0:dd MMM yyy}", TicketsReader("tic_addedDate")))%>&nbsp;</td>
-	                                        <td><% Response.Write(GetContactName(TicketsReader("tic_editedby")))%> </td>
-	                                        <td><% Response.Write(String.Format("{0:dd MMM yyy}", TicketsReader("tic_editedDate")))%>&nbsp;</td>
+	                                        <td><%  Response.Write(GetTicketName(TicketsReader("tic_id")))%></td>
+	                                        <td><%  Response.Write(GetLookupDetails(TicketsReader("tic_status")))%> </td>
+	                                        <td><%  Response.Write(GetLookupDetails(TicketsReader("tic_priority")))%> </td>
+	                                        <td><%  Response.Write(GetLookupDetails(TicketsReader("tic_typeID")))%> </td>
+	                                        <td><%  Response.Write(GetContactName(TicketsReader("tic_assignedTo")))%> </td>
+	                                        <td><%  Response.Write(GetContactName(TicketsReader("tic_addedby")))%> </td>
+	                                        <td><%  Response.Write(String.Format("{0:dd MMM yyy}", TicketsReader("tic_addedDate")))%>&nbsp;</td>
+	                                        <td>
+                                            <%  if not(TicketsReader("tic_editedby") is dbnull.value) then 
+                                                    Response.Write(GetContactName(TicketsReader("tic_editedby")))
+                                                else
+                                                    Response.write("N/A")
+                                                end if%> 
+                                            </td>
+                                            <td>
+                                            <%  if not(TicketsReader("tic_editedDate") is dbnull.value) then 
+                                                    Response.Write(String.Format("{0:dd MMM yyy}", TicketsReader("tic_editedDate")))
+                                                else
+                                                    Response.write("N/A")
+                                                end if%> 
+                                            </td>
 	                                    </tr>
 	                            <%  End While
 	        
@@ -461,11 +518,58 @@
 	                            <%  end if %>
 	                            </tbody>        
 	                        </table>
-                    <%  else if AllowAction("viewProjectTicket", request("project")) and request("ticket") <> "" then %>                            
+
+                        <%  if AllowAction("addProjectTicket", request("project")) then
+                                if request("AddNew") = "Ticket" then
+                                    dim RequestTicketPriority as string
+                                
+                                    if request("RequestTicketPriority") <> "" then 
+                                        RequestTicketPriority = request("RequestTicketPriority")
+                                    else
+                                        RequestTicketPriority = GetLookupDetails(0, "ticket_priority", "Normal")
+                                    end if
+                            %>
+                                    <br /><br /><hr /><br />                                 
+                                
+                                    <table border = "1" width = "100%">
+                                        <thead>
+                                            <tr>
+                                                <th>Name</th>
+	                                            <th>Priority</th>
+                                                <th>Type</th>
+	                                            <th>Assigned</th>
+                                            </tr>                                    
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td><input Class = "TextBox" name="TicketName"   maxlength="100"  size = "85" <% If Request("RequestTicketName") <> "" Then%> Value="<%Response.write(Request("RequestTicketName"))%>" <%end if%>/></td>                                            
+	                                            <td><%  Response.Write(BuildDynamicDropDown("ticket_priority", "PriorityDropDown", RequestTicketPriority))%> &nbsp;</td>
+	                                            <td><%  Response.Write(BuildDynamicDropDown("ticket_type", "TypeDropDown", request("RequestTicketType")))%> &nbsp;</td>     
+	                                            <td><%  Response.Write(BuildDynamicDropDown("Assigned", "AssignedToDropDown", request("RequestTicketAssignedTo")))%> &nbsp;</td>                                                 
+                                            </tr>
+                                        </tbody>
+
+                                        <tfoot>
+                                            <tr>
+                                                <td colspan = "4"><textarea class = "TextBox" name="Description"  cols="151" rows="12"><%Response.Write(request("requestdescription"))%></textarea></td>
+                                            </tr>
+                                        </tfoot>
+                                    </table>
+                            <%  end if  %>
+
+                                <br /><br /><hr /><br />                                 
+
+                            <%  if request("AddNew") = "Ticket" then %>
+                                    <input class = "Button"  type = "submit" name = "SaveTicket" value = "Save Ticket" onclick = "<%AddNewTicket()%>" />                                                    
+                                    <input class = "Button"  type = "submit" name = "CancelAction" value = "Cancel" onclick = "<%CancelAction()%>" />  
+                            <%  else %>
+                                    <input class = "Button"  type = "submit" name = "AddTicket" value = "Add New Ticket" onclick = "<%AddNewTicket()%>" />                                                                                         
+                            <%  end if   
+                            end if                            
+                        else if AllowAction("viewProjectTicket", request("project")) and request("ticket") <> "" then %>                            
                             <input class = "Button"  type = "submit" name = "ViewAllTickets" value = "View All Tickets" onclick = "<%ViewAllTickets()%>" />
 
                             <h2><%  Response.write(GetTicketName(request("ticket"))) %></h2>
-
 
                         <%  Dim TicketsConnection As SqlConnection
 	                        Dim TicketsCommand As SqlCommand
@@ -558,8 +662,21 @@
                                         <tr>
                                             <td><%  Response.Write(GetContactName(TicketsReader("tic_addedby")))%> </td>
 	                                        <td><%  Response.Write(String.Format("{0:dd MMM yyy}", TicketsReader("tic_addedDate")))%>&nbsp;</td>
-                                            <td><%  Response.Write(GetContactName(TicketsReader("tic_editedby")))%> </td>
-	                                        <td><%  Response.Write(String.Format("{0:dd MMM yyy}", TicketsReader("tic_editedDate")))%>&nbsp;</td> 
+                                            <td>
+                                            <%  if not(TicketsReader("tic_editedby") is dbnull.value) then
+                                                    Response.Write(GetContactName(TicketsReader("tic_editedby")))
+                                                else
+                                                    Response.write("N/A")
+                                                end if %> 
+                                            </td>
+
+	                                        <td>
+                                            <%  if not(TicketsReader("tic_editedDate") is dbnull.value) then
+                                                    Response.Write(String.Format("{0:dd MMM yyy}", TicketsReader("tic_editedDate")))
+                                                else
+                                                    Response.write("N/A")
+                                                end if%>&nbsp;
+                                            </td> 
                                             
                                         <%  if request("Edit") <> "Ticket" then %>                                           
 	                                            <td><%  Response.Write(GetLookupDetails(TicketsReader("tic_status")))%> &nbsp;</td>
@@ -734,9 +851,6 @@
                     </asp:View>
                     <asp:View ID="View5" runat="server">
                     Features
-                    </asp:View>
-                    <asp:View ID="View6" runat="server">
-                    Contact Us
                     </asp:View>
                 </asp:MultiView>
             </div>

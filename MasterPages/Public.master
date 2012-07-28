@@ -92,8 +92,7 @@
             .FooterText
             {
                 color:Gray;
-                font-size:11px;
-                
+                font-size:11px;                
             }
         </style>
     </head>
@@ -141,7 +140,7 @@
             <tr>
                 <td class = "FooterText">
                     <hr />
-                    ABN Number:
+                    ABN Number: 47 980 420 796
                 </td>
             </tr>
         </table>          
