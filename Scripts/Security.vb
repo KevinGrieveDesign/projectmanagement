@@ -25,6 +25,7 @@ Function AllowAction(ByVal Action As String, Optional ByVal ProjectId As Integer
         Dim SecurityItemId As String = ""
         Dim Onself As Boolean = False
         Dim OnselfList As String
+        Dim x As Integer
 
         CheckActionConnection = New SqlConnection(System.Configuration.ConfigurationManager.ConnectionStrings("ProjectsConnection").ToString())
         CheckActionConnection.Open()

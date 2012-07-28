@@ -356,10 +356,10 @@
 
                 <Items>
                     <asp:MenuItem Text="Tickets"  Value="0"  />
-                    <asp:MenuItem Text="Content" Value="1" />    
+<%--                    <asp:MenuItem Text="Content" Value="1" />    
                     <asp:MenuItem Text="Pages"  Value="2"  />
                     <asp:MenuItem Text="Repository" Value="3" />  
-                    <asp:MenuItem Text="Features" Value="4" /> 
+                    <asp:MenuItem Text="Features" Value="4" /> --%>
                 </Items>  
             </asp:Menu>
    

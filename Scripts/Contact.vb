@@ -115,7 +115,8 @@ Function GetContactName(ByVal ContactId As String) As String
     End If
 
     If ContactName <> "" Then
-        ContactLink = "<a href = 'contact.aspx?contact=" & ContactId & "'>" & ContactName & "</a>"
+        'ContactLink = "<a href = 'contact.aspx?contact=" & ContactId & "'>" & ContactName & "</a>"
+        ContactLink = ContactName
     Else
         ContactLink = "N/A&nbsp;"
     End If
