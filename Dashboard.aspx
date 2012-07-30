@@ -162,9 +162,9 @@
 	        if x = 0 then%>
 	            <h2>Assigned</h2>
 	    <%  ElseIf x = 1 Then%>
-	            <h2>Added</h2>            
-	    <%  else %>
 	            <h2>Watched</h2>            
+	    <%  else %>
+	            <h2>Added</h2>            
 	    <%  End If%>
 	
 	        <table border = "1" width = "100%">
@@ -209,13 +209,13 @@
 	                If x = 0 Then
 	                    sql = "Select * from ticket "
 	                    sql = sql & " Where tic_assignedTo = '" & Session("UserID") & "' "
-	                ElseIf x = 1 Then
-	                    sql = "Select * from ticket "
-	                    sql = sql & " Where tic_addedBy = '" & Session("UserID") & "'"
-	                Else                   
+	                ElseIf x = 1 Then	                    
 	                    sql = " Select * from ticket inner join ticket_watched "
 	                    sql = sql & " on tic_id = twat_ticId "
 	                    sql = sql & " Where twat_conId = '" & Session("UserID") & "'"
+	                Else                   
+	                    sql = "Select * from ticket "
+	                    sql = sql & " Where tic_addedBy = '" & Session("UserID") & "'"
 	                End If
 	                
 	                sql = sql & "and (" & OpenTicketTypes & ")"      
@@ -255,11 +255,11 @@
 	                If y = 1 Then%>
 	                    <tr>
 	                    <%  If x = 0 Then%>
-	                            <td colspan = "10">There are no Tickets Assigned to you</td>
+	                            <td colspan = "11">There are no Tickets Assigned to you</td>
 	                    <% else if x = 1 %>
-	                            <td colspan = "10">There are no Tickets Added by you</td>
+	                            <td colspan = "11">There are no Tickets Watched by you</td>
 	                    <%  Else%>
-	                            <td colspan = "10">There are no Tickets Watched by you</td>
+	                            <td colspan = "11">There are no Tickets Added by you</td>
 	                    <% end if %>
 	                    </tr>
 	            <%  end if %>

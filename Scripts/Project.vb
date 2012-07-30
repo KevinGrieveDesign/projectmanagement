@@ -21,7 +21,7 @@ Function GetProjectName(ByVal ProjectId as string) as string
     ProjectNameCommand = New SqlCommand(sql, ProjectNameConnection)
     ProjectNameReader = ProjectNameCommand.ExecuteReader()
     
-    If ProjectNameReader.hasrows() then
+    If ProjectNameReader.Hasrows() then
     	While ProjectNameReader.Read()
     		ProjectName = "<a href = 'project.aspx?project=" & ProjectNameReader("pro_id") & "'>" & ProjectNameReader("pro_name") & "<a/>"
     	End While
@@ -101,12 +101,12 @@ Function ProjectLastEditedDate(ByVal ProjectId As Integer, Optional ByVal Time A
 
     While LastEditedReader.Read()
         If Not (LastEditedReader("tic_editedDate") Is DBNull.Value) Then
-            If Time = True Then
-                LastEditedDate = String.Format("{0:dd MMM yyy &nb\sp;&nb\sp;&nb\sp; Ti\me: H:mm:ss}", LastEditedReader("tic_editedDate"))
+            If Time = True and String.Format("{0:Ti\me: H:mm:ss}", LastEditedReader("tic_editedDate")) <> "0:00:00" Then
+                LastEditedDate = String.Format("{0:\Date: dd MMM yyy}", LastEditedReader("tic_editedDate")) & "<br/>" & String.Format("{0:Ti\me: H:mm:ss}", LastEditedReader("tic_editedDate"))
             Else
                 LastEditedDate = String.Format("{0:dd MMM yyy}", LastEditedReader("tic_editedDate"))
             End If
-            ' do a date diff here and get the latest one 
+            'do a date diff here and get the latest one 
         End If
     End While
 
@@ -118,7 +118,7 @@ End Function
 
 'Params
 '	Input: Integer
-'	Ouput: String
+'	Output: String
 '
 'This is used to send out an sql to access all the project tables. Keeps it in one location in order to edit it
 
@@ -126,9 +126,9 @@ Function GetAllProjectTables(ByVal ProjectId as integer) as String
 	Dim sql as String
 	
 	sql = "Select * from project "
-    sql = sql & " Left Join ticket on tic_proid = pro_id "
+    sql = sql & " Left Join ticket on tic_proId = pro_id "
     sql = sql & " Left Join ticket_note on tic_id = note_ticId "
-	'add more tables in here to search through when the system has been built for the other tabels
+	'add more tables in here to search through when the system has been built for the other tables
 	sql = sql & " Where pro_id = '" & ProjectId & "'"
 		
 	return sql
@@ -136,7 +136,7 @@ End Function
 
 'Params
 '	Input: Integer, Optional Integer
-'	Ouput: Integer
+'	Output: Integer
 '
 'This takes the ticketTypeID and the ProjectId. It will get a count of how many tickets of that type are for that project
 'If there is no ticketTypeId sent to it then it will get the amount of tickets for ALL types
@@ -146,7 +146,7 @@ Function GetTicketCount(ByVal ProjectId as integer, Optional ByVal TicketTypeId 
     Dim TicketCountCommand As SqlCommand
 	Dim TicketCountReader As SqlDataReader
 	
-	DIm TicketCount as integer
+	Dim TicketCount as integer
 	Dim sql as String
 	TicketCount = 0 
 
@@ -154,7 +154,7 @@ Function GetTicketCount(ByVal ProjectId as integer, Optional ByVal TicketTypeId 
     TicketCountConnection.Open()
     
     sql = "Select * from ticket "
-    sql = sql & " Where tic_proid = '" & ProjectId & "'"
+    sql = sql & " Where tic_proId = '" & ProjectId & "'"
     
     If TicketTypeId <> 0 then 
     	sql = sql & " and tic_typeId = '" & TicketTypeId & "'"

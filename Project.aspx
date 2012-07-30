@@ -359,7 +359,8 @@
 <%--                    <asp:MenuItem Text="Content" Value="1" />    
                     <asp:MenuItem Text="Pages"  Value="2"  />
                     <asp:MenuItem Text="Repository" Value="3" />  
-                    <asp:MenuItem Text="Features" Value="4" /> --%>
+                    <asp:MenuItem Text="Features" Value="4" />
+                    <asp:MenuItem Text="Roles" Value-"5" --%>
                 </Items>  
             </asp:Menu>
    
@@ -851,6 +852,31 @@
                     </asp:View>
                     <asp:View ID="View5" runat="server">
                     Features
+                    </asp:View>
+                    <asp:View ID="View5" runat="server">
+                    <%  if AllowAction("viewProjectRelationships", request("project")) then %>
+                    		<table width = "100%" border = "1">
+                    			<thead>
+                    				<tr>
+                    					<th colspan = "3" class = "InvisibleRow">&nbsp;</th>
+                    					<th>Added</th>
+                    				</tr>
+                    				
+                    				<tr>
+                    					<th>#</th>
+                    					<th>Name</th>
+                    					<th>Role</th>
+                    					<th>User</th>
+                    					<th>Date</th>
+                					</tr>                					
+                    			</thead>
+                    			<tbody>
+                    				<tr>
+                    				
+                    				</tr>
+                    			</tbody>
+                    		<table>
+                    <%  end if %>
                     </asp:View>
                 </asp:MultiView>
             </div>
