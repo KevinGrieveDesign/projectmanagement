@@ -527,13 +527,13 @@
                                     <br /><br />
 
                                     Added By: <%Response.write(GetContactName(TicketNotesReader("note_addedBy"))) %><br />
-                                    Added Date: <%  Response.Write(String.Format("{0:dd MMM yyy &nb\sp;&nb\sp;&nb\sp; Ti\me: H:mm:ss}", TicketNotesReader("note_addedDate")))%>
+                                    Added Date: <%  Response.Write(String.Format("{0:dd MMM yyy &nb\sp;&nb\sp;&nb\sp; Ti\me: h:mm:ss tt}", TicketNotesReader("note_addedDate")))%>
 
                                 <% if not (TicketNotesReader("note_editedBy") is dbnull.value) or not(TicketNotesReader("note_editedDate") is dbnull.value) then %>
                                         <br /><br />
 
                                         Edited By: <%Response.write(GetContactName(TicketNotesReader("note_editedBy"))) %><br />
-                                        Edited Date: <%  Response.Write(String.Format("{0:dd MMM yyy &nb\sp;&nb\sp;&nb\sp; Ti\me: H:mm:ss}", TicketNotesReader("note_editedDate")))%>
+                                        Edited Date: <%  Response.Write(String.Format("{0:dd MMM yyy &nb\sp;&nb\sp;&nb\sp; Ti\me: h:mm:ss tt}", TicketNotesReader("note_editedDate")))%>
                                 <%  end if 
                                 
                                     if AllowAction("editTicketNote", request("project"), 0, TicketNotesReader("note_addedBy")) then %>
