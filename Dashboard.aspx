@@ -129,11 +129,11 @@
 	                        x = x + 1%>	  
 	                    </td>
 
-                        <td><% Response.Write(GetLookupDetails(RelationshipsReader("rel_typeId")))%> </td>
-                        <td><% Response.Write(GetContactName(RelationshipsReader("rel_contactIdB")))%> </td>
-                        <td><% Response.Write(String.Format("{0:dd MMM yyy}", RelationshipsReader("rel_startdate")))%>&nbsp;</td>
-                        <td><% Response.Write(String.Format("{0:dd MMM yyy}", RelationshipsReader("rel_enddate")))%>&nbsp;</td>
-                        <td><% Response.Write(RelationshipsReader("rel_description"))%>&nbsp;</td>
+                        <td><% If Not (RelationshipsReader("rel_typeId") Is DBNull.Value) Then Response.Write(GetLookupDetails(RelationshipsReader("rel_typeId"))) else Response.Write("N/A")%> </td>
+                        <td><% If Not (RelationshipsReader("rel_contactIdB") Is DBNull.Value) Then Response.Write(GetContactName(RelationshipsReader("rel_contactIdB"))) Else Response.Write("N/A")%> </td>
+                        <td><% If Not (RelationshipsReader("rel_startdate") Is DBNull.Value) Then Response.Write(String.Format("{0:dd MMM yyy}", RelationshipsReader("rel_startdate"))) Else Response.Write("N/A")%>&nbsp;</td>
+                        <td><% If Not (RelationshipsReader("rel_enddate") Is DBNull.Value) Then Response.Write(String.Format("{0:dd MMM yyy}", RelationshipsReader("rel_enddate"))) Else Response.Write("N/A")%>&nbsp;</td>
+                        <td><% If Not (RelationshipsReader("rel_description") Is DBNull.Value) Then Response.Write(RelationshipsReader("rel_description")) else Response.Write("N/A")%>&nbsp;</td>
                     </tr>
             <%  End While
             Else%>
@@ -236,16 +236,16 @@
 		                        y = y + 1%>	               
 		                    </td>
 		                    
-	                    	<td><% Response.Write(GetProjectName(TicketsReader("tic_proId")))%> </td>                        
-	                        <td><% Response.Write(GetTicketName(TicketsReader("tic_id")))%></td>
-	                        <td><% Response.Write(GetLookupDetails(TicketsReader("tic_status")))%> </td>
-	                        <td><% Response.Write(GetLookupDetails(TicketsReader("tic_priority")))%> </td>
-	                        <td><% Response.Write(GetLookupDetails(TicketsReader("tic_typeID")))%> </td>
-	                        <td><% Response.Write(GetContactName(TicketsReader("tic_assignedTo")))%> </td>
-	                        <td><% Response.Write(GetContactName(TicketsReader("tic_addedby")))%> </td>
-	                        <td><% Response.Write(String.Format("{0:dd MMM yyy}", TicketsReader("tic_addedDate")))%>&nbsp;</td>
-	                        <td><% Response.Write(GetContactName(TicketsReader("tic_editedby")))%> </td>
-	                        <td><% Response.Write(String.Format("{0:dd MMM yyy}", TicketsReader("tic_editedDate")))%>&nbsp;</td>
+	                    	<td><%  If Not (TicketsReader("tic_proId") Is DBNull.Value) Then Response.Write(GetProjectName(TicketsReader("tic_proId"))) Else Response.Write("N/A")%> </td>                        
+	                        <td><%  If Not (TicketsReader("tic_id") Is DBNull.Value) Then Response.Write(GetTicketName(TicketsReader("tic_id"))) Else Response.Write("N/A")%></td>
+	                        <td><%  If Not (TicketsReader("tic_status") Is DBNull.Value) Then Response.Write(GetLookupDetails(TicketsReader("tic_status"))) Else Response.Write("N/A")%> </td>
+	                        <td><%  If Not (TicketsReader("tic_priority") Is DBNull.Value) Then Response.Write(GetLookupDetails(TicketsReader("tic_priority"))) Else Response.Write("N/A")%> </td>
+	                        <td><%  If Not (TicketsReader("tic_typeID") Is DBNull.Value) Then Response.Write(GetLookupDetails(TicketsReader("tic_typeID"))) Else Response.Write("N/A")%> </td>
+	                        <td><%  If Not (TicketsReader("tic_assignedTo") Is DBNull.Value) Then Response.Write(GetContactName(TicketsReader("tic_assignedTo"))) Else Response.Write("N/A")%> </td>
+	                        <td><%  If Not (TicketsReader("tic_addedby") Is DBNull.Value) Then Response.Write(GetContactName(TicketsReader("tic_addedby"))) Else Response.Write("N/A")%> </td>
+	                        <td><%  If Not (TicketsReader("tic_addedDate") Is DBNull.Value) Then Response.Write(String.Format("{0:dd MMM yyy}", TicketsReader("tic_addedDate"))) Else Response.Write("N/A")%>&nbsp;</td>
+	                        <td><%  If Not (TicketsReader("tic_editedby") Is DBNull.Value) Then Response.Write(GetContactName(TicketsReader("tic_editedby"))) Else Response.Write("N/A")%> </td>
+	                        <td><%  If Not (TicketsReader("tic_editedDate") Is DBNull.Value) Then Response.Write(String.Format("{0:dd MMM yyy}", TicketsReader("tic_editedDate"))) Else Response.Write("N/A")%>&nbsp;</td>
 	                    </tr>
 	            <%  End While
 	        

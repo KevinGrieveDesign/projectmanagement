@@ -51,7 +51,7 @@ Function ProjectLastEditedBy(ByVal ProjectId as integer) as String
     Dim LastEditedBy As String
     Dim sql As String
 
-    LastEditedBy = ""
+    LastEditedBy = "N/A"
 
     LastEditedByConnection = New SqlConnection(System.Configuration.ConfigurationManager.ConnectionStrings("ProjectsConnection").ToString())
     LastEditedByConnection.Open()
@@ -62,9 +62,9 @@ Function ProjectLastEditedBy(ByVal ProjectId as integer) as String
 	LastEditedByReader = LastEditedByCommand.ExecuteReader()
                         
     While LastEditedByReader.Read()
-        '    If Not (LastEditedByReader("tic_editedBy") Is DBNull.Value) Then
-        'LastEditedBy = LastEditedByReader("tic_editedBy")
-        'End If
+        If Not (LastEditedByReader("tic_editedBy") Is DBNull.Value) Then
+            LastEditedBy = LastEditedByReader("tic_editedBy")
+        End If
     End While
 
     LastEditedByReader.Close()
@@ -102,7 +102,7 @@ Function ProjectLastEditedDate(ByVal ProjectId As Integer, Optional ByVal Time A
     While LastEditedReader.Read()
         If Not (LastEditedReader("tic_editedDate") Is DBNull.Value) Then
             If Time = True and String.Format("{0:Ti\me: H:mm:ss}", LastEditedReader("tic_editedDate")) <> "0:00:00" Then
-                LastEditedDate = String.Format("{0:\Date: dd MMM yyy}", LastEditedReader("tic_editedDate")) & "<br/>" & String.Format("{0:Ti\me: H:mm:ss}", LastEditedReader("tic_editedDate"))
+                LastEditedDate = String.Format("{0:\Da\te: dd MMM yyy}", LastEditedReader("tic_editedDate")) & "<br/>" & String.Format("{0:Ti\me: h:mm:ss tt}", LastEditedReader("tic_editedDate"))
             Else
                 LastEditedDate = String.Format("{0:dd MMM yyy}", LastEditedReader("tic_editedDate"))
             End If
@@ -173,4 +173,294 @@ Function GetTicketCount(ByVal ProjectId as integer, Optional ByVal TicketTypeId 
     TicketCountConnection.Close()
 	                        
 	Return TicketCount
-End Function 
+End Function
+
+Sub Menu1_MenuItemClick(ByVal sender As Object, ByVal e As MenuEventArgs)
+    Dim index As Integer = Int32.Parse(e.Item.Value)
+    MultiView1.ActiveViewIndex = index
+End Sub
+
+Function CharInsertion(ByVal StringToConvert As String) As String
+    CharInsertion = Replace(StringToConvert, "'", "''")
+End Function
+
+Sub ViewAllTickets()
+    If Request.Form("ViewAllTickets") = "View All Tickets" Then
+        response.redirect("Project.aspx?project=" & request("project"))
+    End If
+End Sub
+
+Sub EditTicket()
+    If Request.Form("EditTicket") = "Edit Ticket" Then
+        response.redirect("Project.aspx?project=" & request("project") & "&ticket=" & request("ticket") & "&Edit=Ticket")
+    End If
+End Sub
+
+Sub DeleteTicket()
+    If Request.Form("DeleteTicket") = "Delete Ticket" Then
+        response.redirect("Project.aspx?project=" & request("project") & "&ticket=" & request("ticket") & "&Delete=Ticket")
+    End If
+End Sub
+
+Sub CancelAction()
+    If Request.Form("CancelAction") = "Cancel" Then
+        response.redirect("Project.aspx?project=" & request("project") & "&ticket=" & request("ticket"))
+    End If
+End Sub
+
+Sub SaveTicket()
+    If Request.Form("SaveTicket") = "Save" Then
+        If request("Description") <> "" Then
+            Dim SaveTicketConnection As SqlConnection
+            Dim SaveTicketCommand As SqlCommand
+            Dim SaveTicketReader As SqlDataReader
+            Dim SaveTicket As Integer
+
+            Dim StatusChange As String = ""
+            Dim PriorityChange As String = ""
+            Dim AssigneeChange As String = ""
+            Dim TypeChange As String = ""
+
+            Dim sql As String
+
+            SaveTicketConnection = New SqlConnection(System.Configuration.ConfigurationManager.ConnectionStrings("ProjectsConnection").ToString())
+            SaveTicketConnection.Open()
+
+            sql = "Select * from ticket"
+            sql = sql & " where tic_id = '" & request("ticket") & "'"
+
+            SaveTicketCommand = New SqlCommand(sql, SaveTicketConnection)
+            SaveTicketReader = SaveTicketCommand.ExecuteReader()
+
+            While SaveTicketReader.read()
+                If Request("StatusDropDown") <> SaveTicketReader("tic_status") Then
+                    StatusChange = SaveTicketReader("tic_status")
+                End If
+
+                If Request("PriorityDropDown") <> SaveTicketReader("tic_priority") Then
+                    PriorityChange = SaveTicketReader("tic_priority")
+                End If
+
+                If Request("AssignedToDropDown") <> SaveTicketReader("tic_assignedTo") Then
+                    AssigneeChange = SaveTicketReader("tic_assignedTo")
+                End If
+
+                If Request("TypeDropDown") <> SaveTicketReader("tic_typeId") Then
+                    TypeChange = SaveTicketReader("tic_typeId")
+                End If
+            End While
+
+            SaveTicketReader.close()
+
+            If StatusChange <> "" Then
+                sql = "Insert ticket_note (note_ticId, note_addedBy, note_addedDate, note_text)"
+                sql = sql & " Values( '" & Request("ticket") & "' , '" & session("UserID") & "', getdate() , 'Status Changed from " & GetLookupDetails(StatusChange) & " to " & GetLookupDetails(Request("StatusDropDown")) & "')"
+
+                SaveTicketCommand = New SqlCommand(sql, SaveTicketConnection)
+                SaveTicket = SaveTicketCommand.ExecuteNonQuery()
+            End If
+
+            If PriorityChange <> "" Then
+                sql = "Insert ticket_note (note_ticId, note_addedBy, note_addedDate, note_text)"
+                sql = sql & " Values( '" & Request("ticket") & "' , '" & session("UserID") & "', getdate() , 'Priority Changed from " & GetLookupDetails(PriorityChange) & " to " & GetLookupDetails(Request("PriorityDropDown")) & "')"
+
+                SaveTicketCommand = New SqlCommand(sql, SaveTicketConnection)
+                SaveTicket = SaveTicketCommand.ExecuteNonQuery()
+            End If
+
+            If AssigneeChange <> "" Then
+                sql = "Insert ticket_note (note_ticId, note_addedBy, note_addedDate, note_text)"
+                sql = sql & " Values( '" & Request("ticket") & "' , '" & session("UserID") & "', getdate() , 'Assignee Changed from " & GetLookupDetails(AssigneeChange) & " to " & GetLookupDetails(Request("AssignedToDropDown")) & "')"
+
+                SaveTicketCommand = New SqlCommand(sql, SaveTicketConnection)
+                SaveTicket = SaveTicketCommand.ExecuteNonQuery()
+            End If
+
+            If TypeChange <> "" Then
+                sql = "Insert ticket_note (note_ticId, note_addedBy, note_addedDate, note_text)"
+                sql = sql & " Values( '" & Request("ticket") & "' , '" & session("UserID") & "', getdate() , 'Type Changed from " & GetLookupDetails(TypeChange) & " to " & GetLookupDetails(Request("TypeDropDown")) & "')"
+
+                SaveTicketCommand = New SqlCommand(sql, SaveTicketConnection)
+                SaveTicket = SaveTicketCommand.ExecuteNonQuery()
+            End If
+
+            sql = "Update ticket"
+            sql = sql & " Set tic_status = '" & Request("StatusDropDown") & "'"
+            sql = sql & ", tic_priority = '" & request("PriorityDropDown") & "'"
+            sql = sql & ", tic_assignedTo = '" & request("AssignedToDropDown") & "'"
+            sql = sql & ", tic_typeId = '" & request("TypeDropDown") & "'"
+            sql = sql & ", tic_editedBy = '" & session("UserId") & "'"
+            sql = sql & ", tic_editedDate = getdate()"
+            sql = sql & ", tic_description = '" & request("Description") & "'"
+            sql = sql & " where tic_id = '" & request("ticket") & "'"
+
+            SaveTicketCommand = New SqlCommand(sql, SaveTicketConnection)
+            SaveTicket = SaveTicketCommand.ExecuteNonQuery()
+
+            SaveTicketConnection.close()
+
+            response.redirect("project.aspx?project=" & request("project") & "&ticket=" & request("ticket") & "&Saved=Ticket")
+        Else
+            Dim RedirectString As String
+
+            RedirectString = "Project.aspx?project=" & request("project") & "&ticket=" & request("ticket") & "&Edit=Ticket"
+
+            If Request("StatusDropDown") <> "" Then RedirectString = RedirectString & "&RequestStatusDropDown=" & Request("StatusDropDown")
+            If Request("PriorityDropDown") <> "" Then RedirectString = RedirectString & "&RequestPriorityDropDown=" & Request("PriorityDropDown")
+            If Request("AssignedToDropDown") <> "" Then RedirectString = RedirectString & "&RequestAssignedToDropDown=" & Request("AssignedToDropDown")
+            If Request("TypeDropDown") <> "" Then RedirectString = RedirectString & "&RequestTypeDropDown=" & Request("TypeDropDown")
+            If Request("Description") <> "" Then RedirectString = RedirectString & "&RequestDescription=" & Request("Description")
+
+            RedirectString = RedirectString & "&FieldBlank=True"
+
+            response.redirect(RedirectString)
+        End If
+    End If
+End Sub
+
+Sub AddNewNote()
+    If Request.Form("AddNote") = "Add New Note" Then
+        response.redirect("Project.aspx?project=" & request("project") & "&ticket=" & request("ticket") & "&AddNew=Note")
+    End If
+End Sub
+
+Sub SaveNote(Optional ByVal TicketID As String = "")
+    If Request.Form("SaveNote") = "Save Note" Then
+        If Request("Note") <> "" Then
+            Dim SaveNoteConnection As SqlConnection
+            Dim SaveNoteCommand As SqlCommand
+            Dim SaveNote As Integer
+
+            Dim sql As String
+
+            SaveNoteConnection = New SqlConnection(System.Configuration.ConfigurationManager.ConnectionStrings("ProjectsConnection").ToString())
+            SaveNoteConnection.Open()
+
+            sql = "Insert ticket_note (note_ticId, note_addedBy, note_addedDate, note_text)"
+            sql = sql & " Values( '" & Request("ticket") & "' , '" & session("UserID") & "', getdate() , '" & Request("Note") & "')"
+
+            SaveNoteCommand = New SqlCommand(sql, SaveNoteConnection)
+            SaveNote = SaveNoteCommand.ExecuteNonQuery()
+
+            SaveNoteConnection.close()
+
+            response.redirect("project.aspx?project=" & request("project") & "&ticket=" & request("ticket") & "&Saved=Note")
+        Else
+            response.redirect("Project.aspx?project=" & request("project") & "&ticket=" & request("ticket") & "&AddNew=Note&FieldBlank=True")
+        End If
+    End If
+
+    If Request.Form("UpdateNote") = "Save Note" Then
+        Dim SaveNoteConnection As SqlConnection
+        Dim SaveNoteCommand As SqlCommand
+        Dim SaveNote As Integer
+
+        Dim sql As String
+
+        SaveNoteConnection = New SqlConnection(System.Configuration.ConfigurationManager.ConnectionStrings("ProjectsConnection").ToString())
+        SaveNoteConnection.Open()
+
+        sql = "Update ticket_note"
+        sql = sql & " Set note_text = '" & Request("Note") & "'"
+        sql = sql & ", note_editedby = '" & Session("UserId") & "'"
+        sql = sql & ", note_editedDate = getdate()"
+        sql = sql & " where note_id = '" & TicketID & "'"
+
+        SaveNoteCommand = New SqlCommand(sql, SaveNoteConnection)
+        SaveNote = SaveNoteCommand.ExecuteNonQuery()
+
+        SaveNoteConnection.close()
+
+        response.redirect("project.aspx?project=" & request("project") & "&ticket=" & request("ticket") & "&Saved=Note")
+    End If
+End Sub
+
+Sub EditNote(ByVal testing As Integer)
+    If Request.Form("EditNote") = "Edit Note" Then
+        response.redirect("Project.aspx?project=" & request("project") & "&ticket=" & request("ticket") & "&Edit=Note" & "&NoteId=" & request("NoteId"))
+    End If
+End Sub
+
+Sub AddNewTicket()
+    If Request.Form("AddTicket") = "Add New Ticket" Then
+        response.redirect("Project.aspx?project=" & request("project") & "&AddNew=Ticket")
+    End If
+
+    If Request.Form("SaveTicket") = "Save Ticket" Then
+        If Request("Description") <> "" Or request("TicketName") <> "" Then
+            Dim SaveNoteConnection As SqlConnection
+            Dim SaveNoteCommand As SqlCommand
+            Dim SaveNote As Integer
+
+            Dim sql As String
+
+            SaveNoteConnection = New SqlConnection(System.Configuration.ConfigurationManager.ConnectionStrings("ProjectsConnection").ToString())
+            SaveNoteConnection.Open()
+
+            sql = "Insert ticket (tic_proId, tic_name, tic_assignedTo, tic_addedBy, tic_addedDate, tic_typeID, tic_status, tic_priority, tic_description)"
+            sql = sql & " Values( '" & Request("project") & "' , '" & request("TicketName") & "', '" & request("AssignedToDropDown") & "' , '" & session("UserID") & "', getdate(), "
+            sql = sql & " '" & request("TypeDropDown") & "', '" & GetLookupDetails(0, "ticket_status", "New") & "' , '" & Request("PriorityDropDown") & "', '" & request("description") & "')"
+
+            SaveNoteCommand = New SqlCommand(sql, SaveNoteConnection)
+            SaveNote = SaveNoteCommand.ExecuteNonQuery()
+
+            SaveNoteConnection.close()
+
+            response.redirect("project.aspx?project=" & request("project") & "&ticket=" & request("ticket") & "&Saved=Ticket")
+        Else
+            Dim RedirectString As String
+
+            RedirectString = "Project.aspx?project=" & request("project") & "&AddNew=Ticket"
+
+            If Request("TicketName") <> "" Then RedirectString = RedirectString & "&RequestTicketName=" & Request("TicketName")
+            If Request("AssignedToDropDown") <> "" Then RedirectString = RedirectString & "&RequestAssignedToDropDown=" & Request("AssignedToDropDown")
+            If Request("TypeDropDown") <> "" Then RedirectString = RedirectString & "&RequestTypeDropDown=" & Request("TypeDropDown")
+            If Request("PriorityDropDown") <> "" Then RedirectString = RedirectString & "&RequestPriorityDropDown=" & Request("PriorityDropDown")
+            If Request("Description") <> "" Then RedirectString = RedirectString & "&RequestDescription=" & Request("Description")
+            RedirectString = RedirectString & "&FieldBlank=True"
+
+            response.redirect(RedirectString)
+        End If
+    End If
+End Sub
+
+Sub WatchTicket()
+    If Request.Form("StartWatching") = "Watch Ticket" Then
+        Dim StartWatchingConnection As SqlConnection
+        Dim StartWatchingCommand As SqlCommand
+        Dim StartWatching As Integer
+
+        Dim sql As String
+
+        StartWatchingConnection = New SqlConnection(System.Configuration.ConfigurationManager.ConnectionStrings("ProjectsConnection").ToString())
+        StartWatchingConnection.Open()
+
+        sql = "Insert ticket_watched (twat_ticid, twat_conId, twat_addedDate, twat_addedBy)"
+        sql = sql & " Values( '" & Request("ticket") & "' , '" & session("UserID") & "', getdate(), '" & session("UserID") & "')"
+
+        StartWatchingCommand = New SqlCommand(sql, StartWatchingConnection)
+        StartWatching = StartWatchingCommand.ExecuteNonQuery()
+
+        StartWatchingConnection.close()
+
+        response.redirect("project.aspx?project=" & request("project") & "&ticket=" & request("ticket"))
+    ElseIf Request.Form("StopWatching") = "Stop Watching Ticket" Then
+        Dim StopWatchingConnection As SqlConnection
+        Dim StopWatchingCommand As SqlCommand
+        Dim StopWatching As Integer
+
+        Dim sql As String
+
+        StopWatchingConnection = New SqlConnection(System.Configuration.ConfigurationManager.ConnectionStrings("ProjectsConnection").ToString())
+        StopWatchingConnection.Open()
+
+        sql = "Delete from ticket_watched where twat_ticId = '" & request("ticket") & "' and twat_conId = '" & Session("UserID") & "'"
+
+        StopWatchingCommand = New SqlCommand(sql, StopWatchingConnection)
+        StopWatching = StopWatchingCommand.ExecuteNonQuery()
+
+        StopWatchingConnection.close()
+
+        response.redirect("project.aspx?project=" & request("project") & "&ticket=" & request("ticket"))
+    End If
+End Sub

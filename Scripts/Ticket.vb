@@ -34,3 +34,32 @@ Function GetTicketName(ByVal TicketId as string) as string
     
     Return TicketName
 End Function
+
+Function IsWatcher(ByVal TicketId As String) As Boolean
+    Dim IsWatcherConnection As SqlConnection
+    Dim IsWatcherCommand As SqlCommand
+    Dim IsWatcherReader As SqlDataReader
+
+    Dim sql As String
+    Dim IsWatcherBool As Boolean = False
+
+    IsWatcherConnection = New SqlConnection(System.Configuration.ConfigurationManager.ConnectionStrings("ProjectsConnection").ToString())
+    IsWatcherConnection.Open()
+
+    sql = "Select * from ticket_watched "
+    sql = sql & " Where twat_ticID = '" & TicketId & "' and twat_conID = '" & Session("UserID") & "'"
+
+    IsWatcherCommand = New SqlCommand(sql, IsWatcherConnection)
+    IsWatcherReader = IsWatcherCommand.ExecuteReader()
+
+    If IsWatcherReader.hasrows() Then
+        IsWatcherBool = True
+    Else
+        IsWatcherBool = False
+    End If
+
+    IsWatcherReader.Close()
+    IsWatcherConnection.Close()
+
+    Return IsWatcherBool
+End Function

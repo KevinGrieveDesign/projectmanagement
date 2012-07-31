@@ -2,261 +2,6 @@
 
 <%@ Import Namespace="System.Data.SqlClient" %>
 
-<script runat ="server">
-    Sub Menu1_MenuItemClick(ByVal sender As Object, ByVal e As MenuEventArgs)
-        Dim index As Integer = Int32.Parse(e.Item.Value)
-        MultiView1.ActiveViewIndex = index
-    End Sub
-    
-    Function CharInsertion(ByVal StringToConvert As String) As String
-        CharInsertion = Replace(StringToConvert, "'", "''")
-    End Function
-  
-    Sub ViewAllTickets()
-        If Request.Form("ViewAllTickets") = "View All Tickets" Then
-            response.redirect("Project.aspx?project=" & request("project"))
-        end if
-    End Sub
-
-    sub EditTicket()
-        If Request.Form("EditTicket") = "Edit Ticket" Then
-            response.redirect("Project.aspx?project=" & request("project") & "&ticket=" & request("ticket") & "&Edit=Ticket")
-        end if
-    End Sub
-
-    sub DeleteTicket()
-        If Request.Form("DeleteTicket") = "Delete Ticket" Then
-            response.redirect("Project.aspx?project=" & request("project") & "&ticket=" & request("ticket") & "&Delete=Ticket")
-        end if
-    End Sub
-
-    sub CancelAction()
-        If Request.Form("CancelAction") = "Cancel" Then
-            response.redirect("Project.aspx?project=" & request("project") & "&ticket=" & request("ticket"))
-        end if
-    End Sub
-
-    sub SaveTicket()
-        If Request.Form("SaveTicket") = "Save" Then
-            If request("Description") <> "" then
-                Dim SaveTicketConnection As SqlConnection
-                Dim SaveTicketCommand As SqlCommand
-                Dim SaveTicketReader As SqlDataReader
-                Dim SaveTicket as integer
-           
-                Dim StatusChange as string = ""
-                Dim PriorityChange as string = ""
-                Dim AssigneeChange as string = ""
-                Dim TypeChange as string = ""   
-
-                Dim sql As String
-            
-                SaveTicketConnection = New SqlConnection(System.Configuration.ConfigurationManager.ConnectionStrings("ProjectsConnection").ToString())
-                SaveTicketConnection.Open()
-
-                sql = "Select * from ticket"
-                sql = sql & " where tic_id = '" & request("ticket") & "'"
-
-                SaveTicketCommand = New SqlCommand(sql, SaveTicketConnection)
-                SaveTicketReader = SaveTicketCommand.ExecuteReader()
-                
-                while SaveTicketReader.read()
-                    if Request("StatusDropDown") <> SaveTicketReader("tic_status") then
-                        StatusChange = SaveTicketReader("tic_status")
-                    End if
-
-                    if Request("PriorityDropDown") <> SaveTicketReader("tic_priority") then
-                        PriorityChange = SaveTicketReader("tic_priority")
-                    End if
-
-                    if Request("AssignedToDropDown") <> SaveTicketReader("tic_assignedTo") then
-                        AssigneeChange = SaveTicketReader("tic_assignedTo")
-                    End if
-
-                    if Request("TypeDropDown") <> SaveTicketReader("tic_typeId") then
-                        TypeChange = SaveTicketReader("tic_typeId")
-                    End if
-                end while
-
-                SaveTicketReader.close()
-
-                if StatusChange <> "" then
-                    sql = "Insert ticket_note (note_ticId, note_addedBy, note_addedDate, note_text)"
-                    sql = sql & " Values( '" & Request("ticket") & "' , '" & session("UserID") & "', getdate() , 'Status Changed from " & GetLookupDetails(StatusChange) & " to " & GetLookupDetails(Request("StatusDropDown")) & "')"
-           
-                    SaveTicketCommand = New SqlCommand(sql, SaveTicketConnection)
-                    SaveTicket = SaveTicketCommand.ExecuteNonQuery()
-                end if
-
-                if PriorityChange <> "" then
-                    sql = "Insert ticket_note (note_ticId, note_addedBy, note_addedDate, note_text)"
-                    sql = sql & " Values( '" & Request("ticket") & "' , '" & session("UserID") & "', getdate() , 'Priority Changed from " & GetLookupDetails(PriorityChange) & " to " & GetLookupDetails(Request("PriorityDropDown")) & "')"
-           
-                    SaveTicketCommand = New SqlCommand(sql, SaveTicketConnection)
-                    SaveTicket = SaveTicketCommand.ExecuteNonQuery()
-                end if
-
-                if AssigneeChange <> "" then
-                    sql = "Insert ticket_note (note_ticId, note_addedBy, note_addedDate, note_text)"
-                    sql = sql & " Values( '" & Request("ticket") & "' , '" & session("UserID") & "', getdate() , 'Assignee Changed from " & GetLookupDetails(AssigneeChange) & " to " & GetLookupDetails(Request("AssignedToDropDown")) & "')"
-                               
-                    SaveTicketCommand = New SqlCommand(sql, SaveTicketConnection)
-                    SaveTicket = SaveTicketCommand.ExecuteNonQuery()
-                end if
-
-                if TypeChange <> "" then
-                    sql = "Insert ticket_note (note_ticId, note_addedBy, note_addedDate, note_text)"
-                    sql = sql & " Values( '" & Request("ticket") & "' , '" & session("UserID") & "', getdate() , 'Type Changed from " & GetLookupDetails(TypeChange) & " to " & GetLookupDetails(Request("TypeDropDown")) & "')"
-           
-                    SaveTicketCommand = New SqlCommand(sql, SaveTicketConnection)
-                    SaveTicket = SaveTicketCommand.ExecuteNonQuery()
-                end if                              
-                   
-                sql = "Update ticket"
-                sql = sql & " Set tic_status = '" & Request("StatusDropDown") & "'"
-                sql = sql & ", tic_priority = '" & request("PriorityDropDown") & "'" 
-                sql = sql & ", tic_assignedTo = '" & request("AssignedToDropDown") & "'" 
-                sql = sql & ", tic_typeId = '" & request("TypeDropDown") & "'" 
-                sql = sql & ", tic_editedBy = '" & session("UserId") & "'" 
-                sql = sql & ", tic_editedDate = getdate()" 
-                sql = sql & ", tic_description = '" & request("Description") & "'" 
-                sql = sql & " where tic_id = '" & request("ticket") & "'"
-
-                SaveTicketCommand = New SqlCommand(sql, SaveTicketConnection)
-                SaveTicket = SaveTicketCommand.ExecuteNonQuery()
-            
-                SaveTicketConnection.close()
-
-                response.redirect("project.aspx?project=" & request("project") & "&ticket=" & request("ticket") & "&Saved=Ticket")
-            else
-                Dim RedirectString as string
-
-                RedirectString =  "Project.aspx?project=" & request("project") & "&ticket=" & request("ticket") & "&Edit=Ticket"
-                
-                if Request("StatusDropDown") <> "" then RedirectString = RedirectString & "&RequestStatusDropDown=" & Request("StatusDropDown")
-                if Request("PriorityDropDown") <> "" then RedirectString = RedirectString & "&RequestPriorityDropDown=" & Request("PriorityDropDown")
-                if Request("AssignedToDropDown") <> "" then RedirectString = RedirectString & "&RequestAssignedToDropDown=" & Request("AssignedToDropDown")
-                if Request("TypeDropDown") <> "" then RedirectString = RedirectString & "&RequestTypeDropDown=" & Request("TypeDropDown")
-                if Request("Description") <> "" then RedirectString = RedirectString & "&RequestDescription=" & Request("Description")
-
-                RedirectString = RedirectString & "&FieldBlank=True" 
-
-                response.redirect(RedirectString)
-            end if
-        end if
-    End Sub
-
-    sub AddNewNote()
-        If Request.Form("AddNote") = "Add New Note" Then
-            response.redirect("Project.aspx?project=" & request("project") & "&ticket=" & request("ticket") & "&AddNew=Note")
-        end if
-    End Sub
-
-    sub SaveNote(optional ByVal TicketID as string = "")
-        If Request.Form("SaveNote") = "Save Note" Then
-            If Request("Note") <> "" then
-                Dim SaveNoteConnection As SqlConnection
-                Dim SaveNoteCommand As SqlCommand
-                Dim SaveNote as integer
-           
-                Dim sql As String
-            
-                SaveNoteConnection = New SqlConnection(System.Configuration.ConfigurationManager.ConnectionStrings("ProjectsConnection").ToString())
-                SaveNoteConnection.Open()
-                   
-                sql = "Insert ticket_note (note_ticId, note_addedBy, note_addedDate, note_text)"
-                sql = sql & " Values( '" & Request("ticket") & "' , '" & session("UserID") & "', getdate() , '" & Request("Note") & "')"
-           
-                SaveNoteCommand = New SqlCommand(sql, SaveNoteConnection)
-                SaveNote = SaveNoteCommand.ExecuteNonQuery()
-            
-                SaveNoteConnection.close()
-
-                response.redirect("project.aspx?project=" & request("project") & "&ticket=" & request("ticket") & "&Saved=Note")
-            else
-                response.redirect("Project.aspx?project=" & request("project") & "&ticket=" & request("ticket") & "&AddNew=Note&FieldBlank=True")            
-            end if
-        end if
-
-        if Request.Form("UpdateNote") = "Save Note" Then
-            Dim SaveNoteConnection As SqlConnection
-            Dim SaveNoteCommand As SqlCommand
-            Dim SaveNote as integer
-           
-            Dim sql As String
-            
-            SaveNoteConnection = New SqlConnection(System.Configuration.ConfigurationManager.ConnectionStrings("ProjectsConnection").ToString())
-            SaveNoteConnection.Open()
-                   
-            sql = "Update ticket_note"
-            sql = sql & " Set note_text = '" & Request("Note") & "'"
-            sql = sql & ", note_editedby = '" & Session("UserId") & "'" 
-            sql = sql & ", note_editedDate = getdate()" 
-            sql = sql & " where note_id = '" & TicketID & "'"
-
-            SaveNoteCommand = New SqlCommand(sql, SaveNoteConnection)
-            SaveNote = SaveNoteCommand.ExecuteNonQuery()
-            
-            SaveNoteConnection.close()
-
-            response.redirect("project.aspx?project=" & request("project") & "&ticket=" & request("ticket") & "&Saved=Note")
-        end if
-    End Sub
-
-    Sub EditNote(BYval testing as integer)
-        If Request.Form("EditNote") = "Edit Note" Then
-            response.redirect("Project.aspx?project=" & request("project") & "&ticket=" & request("ticket") & "&Edit=Note" & "&NoteId=" & request("NoteId"))        
-        end if
-    End Sub
-
-    sub AddNewTicket()
-        If Request.Form("AddTicket") = "Add New Ticket" Then
-            response.redirect("Project.aspx?project=" & request("project") & "&AddNew=Ticket")
-        end if
-
-         If Request.Form("SaveTicket") = "Save Ticket" Then
-            If Request("Description") <> "" or request("TicketName") <> "" then
-                Dim SaveNoteConnection As SqlConnection
-                Dim SaveNoteCommand As SqlCommand
-                Dim SaveNote as integer
-           
-                Dim sql As String
-            
-                SaveNoteConnection = New SqlConnection(System.Configuration.ConfigurationManager.ConnectionStrings("ProjectsConnection").ToString())
-                SaveNoteConnection.Open()
-                   
-                sql = "Insert ticket (tic_proId, tic_name, tic_assignedTo, tic_addedBy, tic_addedDate, tic_typeID, tic_status, tic_priority, tic_description)"
-                sql = sql & " Values( '" & Request("project") & "' , '" & request("TicketName") & "', '" & request("AssignedToDropDown") & "' , '" & session("UserID") & "', getdate(), "
-                sql = sql & " '" & request("TypeDropDown") & "', '" & GetLookupDetails(0, "ticket_status", "New") & "' , '" & Request("PriorityDropDown") & "', '" & request("description") & "')"
-           
-                SaveNoteCommand = New SqlCommand(sql, SaveNoteConnection)
-                SaveNote = SaveNoteCommand.ExecuteNonQuery()
-            
-                SaveNoteConnection.close()
-
-                response.redirect("project.aspx?project=" & request("project") & "&ticket=" & request("ticket") & "&Saved=Ticket")
-            else
-                Dim RedirectString as string
-
-                RedirectString =  "Project.aspx?project=" & request("project") & "&AddNew=Ticket"
-                
-                if Request("TicketName") <> "" then RedirectString = RedirectString & "&RequestTicketName=" & Request("TicketName")
-                if Request("AssignedToDropDown") <> "" then RedirectString = RedirectString & "&RequestAssignedToDropDown=" & Request("AssignedToDropDown")
-                if Request("TypeDropDown") <> "" then RedirectString = RedirectString & "&RequestTypeDropDown=" & Request("TypeDropDown")
-                if Request("PriorityDropDown") <> "" then RedirectString = RedirectString & "&RequestPriorityDropDown=" & Request("PriorityDropDown")
-                if Request("Description") <> "" then RedirectString = RedirectString & "&RequestDescription=" & Request("Description")
-                RedirectString = RedirectString & "&FieldBlank=True" 
-
-                response.redirect(RedirectString)        
-            end if
-        end if
-    End Sub
-
-
-
-    
- </script>  
-
 <script language="VB" runat ="server" src = "Scripts/Contact.vb"/>
 <script language="VB" runat ="server" src = "Scripts/Security.vb"/>
 <script language="VB" runat ="server" src = "Scripts/General.vb"/>
@@ -486,26 +231,14 @@
 		                                    </td>
 		                    
 	                                        <td><%  Response.Write(GetTicketName(TicketsReader("tic_id")))%></td>
-	                                        <td><%  Response.Write(GetLookupDetails(TicketsReader("tic_status")))%> </td>
-	                                        <td><%  Response.Write(GetLookupDetails(TicketsReader("tic_priority")))%> </td>
-	                                        <td><%  Response.Write(GetLookupDetails(TicketsReader("tic_typeID")))%> </td>
-	                                        <td><%  Response.Write(GetContactName(TicketsReader("tic_assignedTo")))%> </td>
-	                                        <td><%  Response.Write(GetContactName(TicketsReader("tic_addedby")))%> </td>
-	                                        <td><%  Response.Write(String.Format("{0:dd MMM yyy}", TicketsReader("tic_addedDate")))%>&nbsp;</td>
-	                                        <td>
-                                            <%  if not(TicketsReader("tic_editedby") is dbnull.value) then 
-                                                    Response.Write(GetContactName(TicketsReader("tic_editedby")))
-                                                else
-                                                    Response.write("N/A")
-                                                end if%> 
-                                            </td>
-                                            <td>
-                                            <%  if not(TicketsReader("tic_editedDate") is dbnull.value) then 
-                                                    Response.Write(String.Format("{0:dd MMM yyy}", TicketsReader("tic_editedDate")))
-                                                else
-                                                    Response.write("N/A")
-                                                end if%> 
-                                            </td>
+	                                        <td><%  If Not (TicketsReader("tic_status") Is DBNull.Value) Then Response.Write(GetLookupDetails(TicketsReader("tic_status"))) Else Response.Write("N/A")%> </td>
+	                                        <td><%  If Not (TicketsReader("tic_priority") Is DBNull.Value) Then Response.Write(GetLookupDetails(TicketsReader("tic_priority"))) Else Response.Write("N/A")%> </td>
+	                                        <td><%  If Not (TicketsReader("tic_typeID") Is DBNull.Value) Then Response.Write(GetLookupDetails(TicketsReader("tic_typeID"))) Else Response.Write("N/A")%> </td>
+	                                        <td><%  If Not (TicketsReader("tic_assignedTo") Is DBNull.Value) Then Response.Write(GetContactName(TicketsReader("tic_assignedTo"))) Else Response.Write("N/A")%> </td>
+	                                        <td><%  If Not (TicketsReader("tic_addedby") Is DBNull.Value) Then Response.Write(GetContactName(TicketsReader("tic_addedby"))) Else Response.Write("N/A")%> </td>
+	                                        <td><%  If Not (TicketsReader("tic_addedDate") Is DBNull.Value) Then Response.Write(String.Format("{0:dd MMM yyy}", TicketsReader("tic_addedDate"))) Else Response.Write("N/A")%>&nbsp;</td>
+	                                        <td><%  If not(TicketsReader("tic_editedby") is dbnull.value) then Response.Write(GetContactName(TicketsReader("tic_editedby")))  Else Response.Write("N/A")%></td>
+                                            <td><%  If not(TicketsReader("tic_editedDate") is dbnull.value) then Response.Write(String.Format("{0:dd MMM yyy}", TicketsReader("tic_editedDate"))) Else Response.Write("N/A")%> </td>
 	                                    </tr>
 	                            <%  End While
 	        
@@ -567,8 +300,20 @@
                                     <input class = "Button"  type = "submit" name = "AddTicket" value = "Add New Ticket" onclick = "<%AddNewTicket()%>" />                                                                                         
                             <%  end if   
                             end if                            
-                        else if AllowAction("viewProjectTicket", request("project")) and request("ticket") <> "" then %>                            
-                            <input class = "Button"  type = "submit" name = "ViewAllTickets" value = "View All Tickets" onclick = "<%ViewAllTickets()%>" />
+                        else if AllowAction("viewProjectTicket", request("project")) and request("ticket") <> "" then %>   
+                            <div align = left style = "float:left;">                        
+                                <input class = "Button"  type = "submit" name = "ViewAllTickets" value = "View All Tickets" onclick = "<%ViewAllTickets()%>" />
+                            </div>   
+                                                  
+                            <div align = right style = "float:right;"> 
+                            <%  if IsWatcher(request("ticket")) then %>
+                                    <input class = "Button"  type = "submit" name = "StopWatching" value = "Stop Watching Ticket" onclick = "<%WatchTicket()%>" />                                                    
+                            <%  else %>
+                                    <input class = "Button"  type = "submit" name = "StartWatching" value = "Watch Ticket" onclick = "<%WatchTicket()%>" />
+                            <%  end if %>
+                            </div>                         
+
+                            <br /><br /><br />   
 
                             <h2><%  Response.write(GetTicketName(request("ticket"))) %></h2>
 
@@ -639,51 +384,46 @@
                                         if request("RequestAssignedToDropDown") <> "" then 
                                             RequestTicketAssignedTo = request("RequestAssignedToDropDown")
                                         else
-                                            RequestTicketAssignedTo = TicketsReader("tic_assignedTo")
+                                            if not(TicketsReader("tic_assignedTo") is dbnull.value) then 
+                                                RequestTicketAssignedTo = TicketsReader("tic_assignedTo")
+                                            End if
                                         end if 
 
                                         if request("RequestPriorityDropDown") <> "" then 
                                             RequestTicketPriority = request("RequestPriorityDropDown")
                                         else
-                                            RequestTicketPriority = TicketsReader("tic_priority")
+                                            if not(TicketsReader("tic_priority") is dbnull.value) then 
+                                                RequestTicketPriority = TicketsReader("tic_priority")
+                                            end if
                                         end if 
 
                                         if request("RequestStatusDropDown") <> "" then 
                                             RequestTicketStatus = request("RequestStatusDropDown")
                                         else
-                                            RequestTicketStatus = TicketsReader("tic_status")
+                                            if not(TicketsReader("tic_status") is dbnull.value) then 
+                                                RequestTicketStatus = TicketsReader("tic_status")
+                                            end if
                                         end if 
 
                                         if request("RequestTypeDropDown") <> "" then 
                                             RequestTicketType = request("RequestTypeDropDown")
                                         else
-                                            RequestTicketType = TicketsReader("tic_typeId")
+                                            if not(TicketsReader("tic_typeId") is dbnull.value) then 
+                                                RequestTicketType = TicketsReader("tic_typeId")
+                                            end if
                                         end if %>
                                         
                                         <tr>
-                                            <td><%  Response.Write(GetContactName(TicketsReader("tic_addedby")))%> </td>
-	                                        <td><%  Response.Write(String.Format("{0:dd MMM yyy}", TicketsReader("tic_addedDate")))%>&nbsp;</td>
-                                            <td>
-                                            <%  if not(TicketsReader("tic_editedby") is dbnull.value) then
-                                                    Response.Write(GetContactName(TicketsReader("tic_editedby")))
-                                                else
-                                                    Response.write("N/A")
-                                                end if %> 
-                                            </td>
-
-	                                        <td>
-                                            <%  if not(TicketsReader("tic_editedDate") is dbnull.value) then
-                                                    Response.Write(String.Format("{0:dd MMM yyy}", TicketsReader("tic_editedDate")))
-                                                else
-                                                    Response.write("N/A")
-                                                end if%>&nbsp;
-                                            </td> 
+                                            <td><%  if not(TicketsReader("tic_addedby") is dbnull.value) then Response.Write(GetContactName(TicketsReader("tic_addedby"))) else Response.write("N/A")%> </td>
+	                                        <td><%  if not(TicketsReader("tic_addedDate") is dbnull.value) then Response.Write(String.Format("{0:dd MMM yyy}", TicketsReader("tic_addedDate"))) else Response.write("N/A")%>&nbsp;</td>
+                                            <td><%  if not(TicketsReader("tic_editedby") is dbnull.value) then Response.Write(GetContactName(TicketsReader("tic_editedby"))) else Response.write("N/A")%></td>
+	                                        <td><%  if not(TicketsReader("tic_editedDate") is dbnull.value) then Response.Write(String.Format("{0:dd MMM yyy}", TicketsReader("tic_editedDate"))) else Response.write("N/A")%>&nbsp;</td> 
                                             
                                         <%  if request("Edit") <> "Ticket" then %>                                           
-	                                            <td><%  Response.Write(GetLookupDetails(TicketsReader("tic_status")))%> &nbsp;</td>
-	                                            <td><%  Response.Write(GetLookupDetails(TicketsReader("tic_priority")))%> &nbsp;</td>
-	                                            <td><%  Response.Write(GetContactName(TicketsReader("tic_assignedTo")))%> &nbsp;</td>
-	                                            <td><%  Response.Write(GetLookupDetails(TicketsReader("tic_typeId")))%> &nbsp;</td>
+	                                            <td><%  if not(TicketsReader("tic_status") is dbnull.value) then Response.Write(GetLookupDetails(TicketsReader("tic_status"))) else Response.write("N/A")%> &nbsp;</td>
+	                                            <td><%  if not(TicketsReader("tic_priority") is dbnull.value) then Response.Write(GetLookupDetails(TicketsReader("tic_priority"))) else Response.write("N/A")%> &nbsp;</td>
+	                                            <td><%  if not(TicketsReader("tic_assignedTo") is dbnull.value) then Response.Write(GetContactName(TicketsReader("tic_assignedTo"))) else Response.write("N/A")%> &nbsp;</td>
+	                                            <td><%  if not(TicketsReader("tic_typeId") is dbnull.value) then Response.Write(GetLookupDetails(TicketsReader("tic_typeId"))) else Response.write("N/A")%> &nbsp;</td>
                                         <%  else%>
 	                                            <td><%  Response.Write(BuildDynamicDropDown("ticket_status", "StatusDropDown", RequestTicketStatus, "", False, True))%>&nbsp; </td>
 	                                            <td><%  Response.Write(BuildDynamicDropDown("ticket_priority", "PriorityDropDown", RequestTicketPriority))%> &nbsp;</td>
@@ -699,7 +439,7 @@
                                                     <%  end if %>
                                         
                                                     <%  if AllowAction("deleteProjectTicket", request("project")) then %>
-                                                            <input class = "Button"  type = "submit" name = "DeleteTicket" value = "Delete Ticket" onclick = "<%DeleteTicket()%>" />  
+                                                            <%--<input class = "Button"  type = "submit" name = "DeleteTicket" value = "Delete Ticket" onclick = "<%DeleteTicket()%>" />  --%>
                                                     <%  end if %>    
                                                 <%  else %>
                                                     <%  if Request("Delete") = "Ticket"
@@ -838,9 +578,7 @@
 
                         <br /><br />
                     </asp:View>
-
-
-
+                    
                     <asp:View ID="View2" runat="server">
                     Content
                     </asp:View>
@@ -853,7 +591,7 @@
                     <asp:View ID="View5" runat="server">
                     Features
                     </asp:View>
-                    <asp:View ID="View5" runat="server">
+                    <asp:View ID="View6" runat="server">
                     <%  if AllowAction("viewProjectRelationships", request("project")) then %>
                     		<table width = "100%" border = "1">
                     			<thead>
