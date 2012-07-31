@@ -2,6 +2,13 @@
 
 <%@ Import Namespace="System.Data.SqlClient" %>
 
+<script runat ="server">
+    Sub Menu1_MenuItemClick(ByVal sender As Object, ByVal e As MenuEventArgs)
+        Dim index As Integer = Int32.Parse(e.Item.Value)
+        MultiView1.ActiveViewIndex = index
+    End Sub
+</script>
+
 <script language="VB" runat ="server" src = "Scripts/Contact.vb"/>
 <script language="VB" runat ="server" src = "Scripts/Security.vb"/>
 <script language="VB" runat ="server" src = "Scripts/General.vb"/>
@@ -9,9 +16,7 @@
 <script language="VB" runat ="server" src = "Scripts/Ticket.vb"/>
 
 <asp:Content ID="Content" ContentPlaceHolderID="Content" Runat="Server">     
-<% ' RenewSession()
-    
-    If Request("project") = "" Then%>
+<% If Request("project") = "" Then%>
 	
 	    <h1>Projects</h1>
 

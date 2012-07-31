@@ -175,11 +175,6 @@ Function GetTicketCount(ByVal ProjectId as integer, Optional ByVal TicketTypeId 
 	Return TicketCount
 End Function
 
-Sub Menu1_MenuItemClick(ByVal sender As Object, ByVal e As MenuEventArgs)
-    Dim index As Integer = Int32.Parse(e.Item.Value)
-    MultiView1.ActiveViewIndex = index
-End Sub
-
 Function CharInsertion(ByVal StringToConvert As String) As String
     CharInsertion = Replace(StringToConvert, "'", "''")
 End Function
