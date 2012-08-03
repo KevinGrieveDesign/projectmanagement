@@ -5,7 +5,7 @@
 'This takes the project Id and gives out the project name in a hyperlink 
 
 Function GetProjectName(ByVal ProjectId as string) as string
-	Dim ProjectNameConnection As SqlConnection
+    Dim ProjectNameConnection As SqlConnection
     Dim ProjectNameCommand As SqlCommand
     Dim ProjectNameReader As SqlDataReader
     
