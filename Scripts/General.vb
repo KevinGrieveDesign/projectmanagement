@@ -379,3 +379,43 @@ Function BuildDynamicDropDown(ByVal Parent As String, ByVal DropDownName As Stri
     BuildDropDownConneciton.close()
 End Function
 
+
+'Params
+'	Input:
+'	Output:
+'
+'This is used to log what people are doing, when they are doing it and where
+
+Sub LogActions (Byval Action as string, Optional ByVal PageId as integer = 0, Optional ByVal ProjectId as integer = 0, Optional ByVal TicketId as integer = 0) 
+	Dim LogActionsConnection as sqlConnection
+	Dim LogActionsCommand as sqlCommand 
+	Dim LogActions as integer
+	
+	Dim Sql as string
+	
+	If PageId = "" then 
+		PageId = GetPageId()
+	End if
+	
+	LogActionsConnection = New SqlConnection(System.Configuration.ConfigurationManager.ConnectionStrings("ProjectsConnection").ToString())
+    LogActionsConnection.Open()
+	
+	sql = "Insert log (log_conId, log_pageId,
+	If ProjectId <> 0 then
+		sql = sql & "log_proId,"
+	End if
+	sql = sql & "log_action, log_addedDate)"	
+	
+    sql = sql & " Values('" & session("UserID") & "', '" & PageId & "' , 
+    
+    If ProjectId <> 0 then
+    	sql = sql & " '" & ProjectId & "' ,"
+    End if
+    
+    sql = sql & "'" & Action & "' , getdate() )"
+
+    LogActionsCommand = New SqlCommand(sql, LogActionsConnection)
+    'LogActions = LogActionsCommand.ExecuteNonQuery()
+
+	LogActionsConnection.Close()
+End Sub
