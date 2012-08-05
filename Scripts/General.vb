@@ -217,6 +217,7 @@ Sub BuildMenu()
     Dim Grouping As String
     Dim sql As String
     Dim Counter As Integer
+    Dim ViewPageBoolean As Boolean
 
     Grouping = ""
     Counter = 0
@@ -229,7 +230,13 @@ Sub BuildMenu()
     BuildMenuReader = BuildMenuCommand.ExecuteReader()
 
     While BuildMenuReader.Read()
-        If ViewPage(BuildMenuReader("pag_id"), 0, "Menu") Or BuildMenuReader("pag_public") = True Then
+        ViewPageBoolean = True
+
+        If BuildMenuReader("pag_public") = False Then
+            ViewPageBoolean = ViewPage(BuildMenuReader("pag_id"), 0, "Menu")
+        End If
+
+        If ViewPageBoolean Or BuildMenuReader("pag_public") = True Then
             Counter = Counter + 1
             If Not (BuildMenuReader("pag_grouping") Is DBNull.Value) Then
                 If Grouping = "" Or Grouping <> BuildMenuReader("pag_grouping") Then
@@ -381,41 +388,67 @@ End Function
 
 
 'Params
-'	Input:
-'	Output:
+'	Input: String, Optional Integer, Optional Integer, Optional Integer
+'	Output: N/A
 '
 'This is used to log what people are doing, when they are doing it and where
 
-Sub LogActions (Byval Action as string, Optional ByVal PageId as integer = 0, Optional ByVal ProjectId as integer = 0, Optional ByVal TicketId as integer = 0) 
-	Dim LogActionsConnection as sqlConnection
-	Dim LogActionsCommand as sqlCommand 
-	Dim LogActions as integer
-	
-	Dim Sql as string
-	
-	If PageId = "" then 
-		PageId = GetPageId()
-	End if
-	
-	LogActionsConnection = New SqlConnection(System.Configuration.ConfigurationManager.ConnectionStrings("ProjectsConnection").ToString())
+Sub LogAction(ByVal Action As String, Optional ByVal ProjectId As Integer = 0, Optional ByVal TicketId As Integer = 0, Optional ByVal PageId As Integer = 0, Optional ByVal Text1 As String = "", Optional ByVal Text2 As String = "")
+    Dim LogActionsConnection As sqlConnection
+    Dim LogActionsCommand As sqlCommand
+    Dim LogActions As Integer
+
+    Dim Sql As String
+
+    If PageID = 0 Then
+        PageId = GetPageId()
+    End If
+
+    LogActionsConnection = New SqlConnection(System.Configuration.ConfigurationManager.ConnectionStrings("ProjectsConnection").ToString())
     LogActionsConnection.Open()
-	
-	sql = "Insert log (log_conId, log_pageId,
-	If ProjectId <> 0 then
-		sql = sql & "log_proId,"
-	End if
-	sql = sql & "log_action, log_addedDate)"	
-	
-    sql = sql & " Values('" & session("UserID") & "', '" & PageId & "' , 
-    
-    If ProjectId <> 0 then
-    	sql = sql & " '" & ProjectId & "' ,"
-    End if
-    
+
+    sql = "Insert log (log_conId, log_pagId,"
+
+    If ProjectId <> 0 Then
+        sql = sql & "log_proId,"
+    End If
+
+    If TicketId <> 0 Then
+        sql = sql & "log_ticId,"
+    End If
+
+    If Text1 <> "" Then
+        sql = sql & "log_text1,"
+    End If
+
+    If Text2 <> "" Then
+        sql = sql & "log_text2,"
+    End If
+
+    sql = sql & "log_action, log_addedDate)"
+
+    sql = sql & " Values('" & session("UserID") & "', '" & PageId & "' , "
+
+    If ProjectId <> 0 Then
+        sql = sql & " '" & ProjectId & "' ,"
+    End If
+
+    If TicketId <> 0 Then
+        sql = sql & " '" & TicketId & "' ,"
+    End If
+
+    If Text1 <> "" Then
+        sql = sql & " '" & Text1 & "' ,"
+    End If
+
+    If Text2 <> "" Then
+        sql = sql & " '" & Text2 & "' ,"
+    End If
+
     sql = sql & "'" & Action & "' , getdate() )"
 
     LogActionsCommand = New SqlCommand(sql, LogActionsConnection)
-    'LogActions = LogActionsCommand.ExecuteNonQuery()
+    LogActions = LogActionsCommand.ExecuteNonQuery()
 
-	LogActionsConnection.Close()
+    LogActionsConnection.Close()
 End Sub

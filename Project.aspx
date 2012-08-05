@@ -4,6 +4,7 @@
 
 <script runat ="server">
     Sub Menu1_MenuItemClick(ByVal sender As Object, ByVal e As MenuEventArgs)
+        LogAction("ChangeProjectTab", Request("project"), 0, 0, "StartTab=" & MultiView1.ActiveViewIndex, "EndTab=" & Int32.Parse(e.Item.Value))
         Dim index As Integer = Int32.Parse(e.Item.Value)
         MultiView1.ActiveViewIndex = index
     End Sub
@@ -16,7 +17,8 @@
 <script language="VB" runat ="server" src = "Scripts/Ticket.vb"/>
 
 <asp:Content ID="Content" ContentPlaceHolderID="Content" Runat="Server">     
-<% If Request("project") = "" Then%>
+<% If Request("project") = "" Then
+        LogAction("ViewProjectDashboard", Request("project"))%>
 	
 	    <h1>Projects</h1>
 
@@ -91,7 +93,8 @@
 		    </tbody>
 	    </table>
 <%  else
-		if AllowAction("",request("project")) then%>
+        If AllowAction("", Request("project")) Then%>
+
 			<h1><%  Response.write(GetProjectName(request("project"))) %></h1><br />
 			
 		<%  Dim GetProjectOwnerConnection as sqlConnection
@@ -106,8 +109,8 @@
 
                 <Items>
                     <asp:MenuItem Text="Tickets"  Value="0"  />
-<%--                    <asp:MenuItem Text="Content" Value="1" />    
-                    <asp:MenuItem Text="Pages"  Value="2"  />
+                   <asp:MenuItem Text="Content" Value="1" />    
+ <%--                    <asp:MenuItem Text="Pages"  Value="2"  />
                     <asp:MenuItem Text="Repository" Value="3" />  
                     <asp:MenuItem Text="Features" Value="4" />
                     <asp:MenuItem Text="Roles" Value-"5" --%>
@@ -122,7 +125,10 @@
 --------------------------------------------View 1 - Activities-----------------------------------------------------------------
 ------------------------------------------------------------------------------------------------------------------- --%>
                     <asp:View ID="View1" runat="server">
-                    <%  if AllowAction("viewProjectTicket", request("project")) and request("ticket") = "" then %>
+                    <%  Dim ViewProjectTicket As String
+                        ViewProjectTicket = AllowAction("viewProjectTicket", Request("project")) And Request("ticket")
+                        If ViewProjectTicket = "" Then%>
+
                             <h1>Summary</h1>
                                 <table width = "100%" border = "1">
                                     <thead>
@@ -305,7 +311,9 @@
                                     <input class = "Button"  type = "submit" name = "AddTicket" value = "Add New Ticket" onclick = "<%AddNewTicket()%>" />                                                                                         
                             <%  end if   
                             end if                            
-                        else if AllowAction("viewProjectTicket", request("project")) and request("ticket") <> "" then %>   
+                        ElseIf ViewProjectTicket <> "" Then
+                            LogAction("ViewProjectTicket", Request("project"), Request("ticket"))%>                          
+                                                           
                             <div align = left style = "float:left;">                        
                                 <input class = "Button"  type = "submit" name = "ViewAllTickets" value = "View All Tickets" onclick = "<%ViewAllTickets()%>" />
                             </div>   
@@ -349,7 +357,10 @@
                                 AddedById = TicketsReader("tic_addedBy")
                             end while
 
-                            TicketsReader.close()%>
+                            TicketsReader.Close()
+                              
+                            Dim DeleteProjectTicket As Boolean = AllowAction("deleteProjectTicket", Request("project"))
+                            Dim EditProjectTicket As Boolean = AllowAction("editProjectTicket", Request("project"), 0, AddedById)%>
 
                             <table border = "1" width = "100%" >
                                 <thead>
@@ -367,7 +378,7 @@
                                         <th>Assigned To</th>
                                         <th>Ticket Type</th>
 
-                                    <%  if AllowAction("deleteProjectTicket", request("project")) or AllowAction("editProjectTicket", request("project"), 0, AddedById)  %>
+                                    <%  If DeleteProjectTicket Or EditProjectTicket Then%>
                                             <th>Action</th>
                                    <%   end if%>
 
@@ -436,19 +447,19 @@
 	                                            <td><%  Response.Write(BuildDynamicDropDown("ticket_type", "TypeDropDown", RequestTicketType, "", False, True))%> &nbsp;</td>                                     
                                         <%  end if %>
 
-                                        <%  if AllowAction("deleteProjectTicket", request("project")) or AllowAction("editProjectTicket", request("project"), 0, AddedByID)  %>
+                                        <%  If DeleteProjectTicket Or EditProjectTicket Then%>
                                                 <td>
                                                 <%  if request("Delete") <> "Ticket" and request("Edit") <> "Ticket" then %>
-                                                    <%  if AllowAction("editProjectTicket", request("project"), 0, AddedByID) then %>
+                                                    <%  if EditProjectTicket then %>
                                                             <input class = "Button"  type = "submit" name = "EditTicket" value = "Edit Ticket" onclick = "<%EditTicket()%>" />
                                                     <%  end if %>
                                         
-                                                    <%  if AllowAction("deleteProjectTicket", request("project")) then %>
+                                                    <%  If DeleteProjectTicket Then%>
                                                             <%--<input class = "Button"  type = "submit" name = "DeleteTicket" value = "Delete Ticket" onclick = "<%DeleteTicket()%>" />  --%>
                                                     <%  end if %>    
                                                 <%  else %>
                                                     <%  if Request("Delete") = "Ticket"
-                                                            if AllowAction("deleteProjectTicket", request("project"))   %>                                
+                                                            if DeleteProjectTicket then  %>                                
                                                             <input class = "Button"  type = "submit" name = "DeleteConfirmed" value = "Confirm Delete" onclick = "<%DeleteTicket()%>" />  
                                                         <%  end if
                                                         else if Request("Edit") = "Ticket"%>                                        

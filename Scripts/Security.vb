@@ -1,4 +1,4 @@
-'Params:
+﻿'Params:
 '    Input: Optional String, Optional Integer, Optional Integer, Optional Integer
 '    Output: Boolean
 '
@@ -119,6 +119,8 @@ Function AllowAction(ByVal Action As String, Optional ByVal ProjectId As Integer
         CheckActionReader.close()
         CheckActionConnection.close()
 
+        LogAction("AllowAction", ProjectId, request("ticket"), PageId, Action, AllowAccessToAction)
+
         Return AllowAccessToAction
     Else
         Throw New ArgumentNullException("No Action or Project/Page Id given to AllowAction")
@@ -168,8 +170,12 @@ Function ViewPage(ByVal PageId As Integer, Optional ByVal ProjectId As Integer =
         ViewPageConnection.close()
 
         If ViewPageResult = False And Location = "" Then
+            LogAction("ViewPage", ProjectId, 0, PageId, "", True)
+
             RenewSession(True)
         Else
+            LogAction("ViewPage", ProjectId, 0, PageId, Location, ViewPageResult)
+
             RenewSession()
 
             Return ViewPageResult

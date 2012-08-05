@@ -26,7 +26,7 @@ End Sub
 'If the relationhsip alread exsists it will not add it and will return "Duplication"
 'If it trys to add it and it doesnt get added then it will return Fasle
 
-Function AddRelationShip(ByVal ContactIdA As Integer, ByVal ContactIdB As Integer, ByVal RelationshipTypeId As Integer, Optional ByVal isActive As Boolean = True, Optional ByVal StartDate As String = "", Optional ByVal EndDate As String = "", Optional ByVal Decription As String = "")
+Function AddRelationShip(ByVal ContactIdA As Integer, ByVal ContactIdB As Integer, ByVal RelationshipTypeId As Integer, Optional ByVal isActive As Boolean = True, Optional ByVal StartDate As String = "", Optional ByVal EndDate As String = "", Optional ByVal Description As String = "")
     If ContactIdA = 0 Or ContactIdB = 0 Or RelationshipTypeId = 0 Then
         Throw New ArgumentNullException("Add relationship Function doesnt have necessary ID's")
     Else
@@ -63,6 +63,14 @@ Function AddRelationShip(ByVal ContactIdA As Integer, ByVal ContactIdB As Intege
 
         AddRelationshipReader.Close()
         AddRelationshipConnection.Close()
+
+        Dim RelationshipDetails1 As String
+        Dim RelationshipDetails2 As String
+
+        RelationshipDetails1 = "ContactIdA=" & ContactIdA & "," & "ContactIdB=" & ContactIdB & "," & "RelationshipType=" & RelationshipTypeId
+        RelationshipDetails1 = "StartDate=" & StartDate & "," & "EndDate=" & EndDate & "," & "Description=" & Description
+
+        LogAction("AddContactRelationship", 0, 0, 0, RelationshipDetails1, RelationshipDetails2)
 
         Return Result
     End If

@@ -247,6 +247,11 @@ Sub SaveTicket()
 
             SaveTicketReader.close()
 
+            Dim TicketDetails As String
+            TicketDetails = "StatusChange=" & StatusChange & "," & "PriorityChange=" & PriorityChange & "," & "AssigneeChange=" & AssigneeChange & "," & "TypeChange=" & TypeChange
+
+            LogAction("EditTicket", request("project"), request("ticket"), 0, request("Description"), TicketDetails)
+
             If StatusChange <> "" Then
                 sql = "Insert ticket_note (note_ticId, note_addedBy, note_addedDate, note_text)"
                 sql = sql & " Values( '" & Request("ticket") & "' , '" & session("UserID") & "', getdate() , 'Status Changed from " & GetLookupDetails(StatusChange) & " to " & GetLookupDetails(Request("StatusDropDown")) & "')"
@@ -427,6 +432,8 @@ Sub WatchTicket()
 
         Dim sql As String
 
+        LogAction("StartWatchingTicket", request("project"), request("ticket"))
+
         StartWatchingConnection = New SqlConnection(System.Configuration.ConfigurationManager.ConnectionStrings("ProjectsConnection").ToString())
         StartWatchingConnection.Open()
 
@@ -445,6 +452,8 @@ Sub WatchTicket()
         Dim StopWatching As Integer
 
         Dim sql As String
+
+        LogAction("StopWatchingTicket", request("project"), request("ticket"))
 
         StopWatchingConnection = New SqlConnection(System.Configuration.ConfigurationManager.ConnectionStrings("ProjectsConnection").ToString())
         StopWatchingConnection.Open()
