@@ -178,7 +178,12 @@ Function SqlLookupBuilder(ByVal LookupParent As String, ByVal BuilderColumn As S
         sql = sql & " where lup_parent = '" & LookupParent & "'"
 
         If LookupChild <> "" Then
-            sql = sql & " and lup_id <> '" & LookupChild & "'"
+            Dim LookupChildArray() As String = split(LookupChild, ",")
+            Dim x As Integer
+
+            For x = 0 To LookupChildArray.length() - 1
+                sql = sql & " and lup_id <> '" & LookupChildArray(x) & "' "
+            Next
         End If
 
         SqlLookupBuilderCommand = New SqlCommand(sql, SqlLookupBuilderConnection)

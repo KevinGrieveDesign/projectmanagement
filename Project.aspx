@@ -221,7 +221,7 @@
 	                                TicketsConnection = New SqlConnection(System.Configuration.ConfigurationManager.ConnectionStrings("ProjectsConnection").ToString())
 	                                TicketsConnection.Open()
 	                
-	                                OpenTicketTypes = SqlLookupBuilder("ticket_status", "tic_status", "or", GetLookupDetails(0, "ticket_status", "Closed"))
+	                                OpenTicketTypes = SqlLookupBuilder("ticket_status", "tic_status", "or", GetLookupDetails(0, "ticket_status", "Closed") & "," & GetLookupDetails(0, "ticket_status", "Rejected"))
 	                
 	                                sql = "Select * from ticket "
 	                                sql = sql & " where (" & OpenTicketTypes & ")" 
