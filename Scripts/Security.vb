@@ -1,5 +1,5 @@
-﻿'Params:
-'    Input: Optional String, Optionsl Integer, Optional Integer, Optional Integer
+'Params:
+'    Input: Optional String, Optional Integer, Optional Integer, Optional Integer
 '    Output: Boolean
 '
 'This expects a string about what is being accessed i.e. trying to edit a ticket or display a menu item for a specific page
@@ -8,7 +8,7 @@
 '
 'This can also be used to see if the person has any access to a project by sending just the project ID
 '
-'If the USer is of the lowest user group (Project Reporter (3)) then the OnSelf  field is checked. This means that they have the editticket sec item for a project but they are only
+'If the User is of the lowest user group (Project Reporter (3)) then the OnSelf  field is checked. This means that they have the editticket sec item for a project but they are only
 'a Project reporter. This combination then only allows them to edit their own things.
 
 Function AllowAction(ByVal Action As String, Optional ByVal ProjectId As Integer = 0, Optional ByVal PageId As Integer = 0, Optional ByVal TicketAddedById As Integer = 0) As Boolean
@@ -185,7 +185,7 @@ End Function
 '	Output: 
 '
 'This renews the users session by destroying it and matching with their personal record.
-'If there is no Session or record then it will seend you to the login page
+'If there is no Session or record then it will send you to the login page
 'If you dont have access to a page you will be sent here with a param of true, your session will be renewed and then to the dashboard
 
 Function RenewSession(Optional ByVal SendToDashboard As Boolean = False) As Boolean
@@ -231,3 +231,4 @@ Function RenewSession(Optional ByVal SendToDashboard As Boolean = False) As Bool
         Response.Redirect("Login.aspx?LoggedIn=Unknown")
     End If
 End Function
+
