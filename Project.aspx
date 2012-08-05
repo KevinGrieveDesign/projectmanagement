@@ -126,8 +126,9 @@
 ------------------------------------------------------------------------------------------------------------------- --%>
                     <asp:View ID="View1" runat="server">
                     <%  Dim ViewProjectTicket As String
-                        ViewProjectTicket = AllowAction("viewProjectTicket", Request("project")) And Request("ticket")
-                        If ViewProjectTicket = "" Then%>
+                        ViewProjectTicket = AllowAction("viewProjectTicket", Request("project"))
+
+                        If ViewProjectTicket = "True" And Request("ticket")  = "" Then%>
 
                             <h1>Summary</h1>
                                 <table width = "100%" border = "1">
