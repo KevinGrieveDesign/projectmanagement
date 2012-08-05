@@ -106,7 +106,6 @@ Function ProjectLastEditedDate(ByVal ProjectId As Integer, Optional ByVal Time A
             Else
                 LastEditedDate = String.Format("{0:dd MMM yyy}", LastEditedReader("tic_editedDate"))
             End If
-            'LastEditedDate = LastEditedReader("tic_editedDate") & "jh"
             'do a date diff here and get the latest one 
         End If
 
@@ -388,7 +387,7 @@ Sub AddNewTicket()
     End If
 
     If Request.Form("SaveTicket") = "Save Ticket" Then
-        If Request("Description") <> "" Or request("TicketName") <> "" Then
+        If Request("Description") <> "" And request("TicketName") <> "" Then
             Dim SaveNoteConnection As SqlConnection
             Dim SaveNoteCommand As SqlCommand
             Dim SaveNote As Integer
@@ -407,7 +406,7 @@ Sub AddNewTicket()
 
             SaveNoteConnection.close()
 
-            response.redirect("project.aspx?project=" & request("project") & "&ticket=" & request("ticket") & "&Saved=Ticket")
+            response.redirect("Project.aspx?project=" & request("project") & "&Saved=Ticket")
         Else
             Dim RedirectString As String
 
