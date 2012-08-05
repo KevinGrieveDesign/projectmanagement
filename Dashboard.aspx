@@ -239,7 +239,17 @@
 	                    	<td><%  If Not (TicketsReader("tic_proId") Is DBNull.Value) Then Response.Write(GetProjectName(TicketsReader("tic_proId"))) Else Response.Write("N/A")%> </td>                        
 	                        <td><%  If Not (TicketsReader("tic_id") Is DBNull.Value) Then Response.Write(GetTicketName(TicketsReader("tic_id"))) Else Response.Write("N/A")%></td>
 	                        <td><%  If Not (TicketsReader("tic_status") Is DBNull.Value) Then Response.Write(GetLookupDetails(TicketsReader("tic_status"))) Else Response.Write("N/A")%> </td>
-	                        <td><%  If Not (TicketsReader("tic_priority") Is DBNull.Value) Then Response.Write(GetLookupDetails(TicketsReader("tic_priority"))) Else Response.Write("N/A")%> </td>
+
+                        <%  if Not (TicketsReader("tic_priority") Is DBNull.Value)
+                                if GetLookupDetails(TicketsReader("tic_priority")) = "Urgent" or GetLookupDetails(TicketsReader("tic_priority")) = "Immediate" then%>
+	                                <td class = "No"><b><%  Response.Write(GetLookupDetails(TicketsReader("tic_priority")))%> </b></td>
+                            <%  else %>
+                                    <td><%  Response.Write(GetLookupDetails(TicketsReader("tic_priority")))%></td>
+                            <%  end if
+                            else%>
+                                <td>N/A</td>
+                        <%  end if %>
+                            
 	                        <td><%  If Not (TicketsReader("tic_typeID") Is DBNull.Value) Then Response.Write(GetLookupDetails(TicketsReader("tic_typeID"))) Else Response.Write("N/A")%> </td>
 	                        <td><%  If Not (TicketsReader("tic_assignedTo") Is DBNull.Value) Then Response.Write(GetContactName(TicketsReader("tic_assignedTo"))) Else Response.Write("N/A")%> </td>
 	                        <td><%  If Not (TicketsReader("tic_addedby") Is DBNull.Value) Then Response.Write(GetContactName(TicketsReader("tic_addedby"))) Else Response.Write("N/A")%> </td>
@@ -270,10 +280,92 @@
 </asp:Content>
 
 <asp:Content ID="Box4" ContentPlaceHolderID="Box4" Runat="Server">    
-<%  if AllowAction("viewLogs",1) then %>
+<%  If ViewPage(GetPageID("Logs.aspx"), 0 ,"DashboardLogs") Then%>
 
-    <h1>Recent Activity</h1>    
+        <h1>Recent Activity by Others</h1>  
     
+        <h2>Logs</h2>  
+    
+        <table border = "1" width = "100%">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>User</th>
+                    <th>Project</th>
+                    <th>Page</th>
+                    <th>Action</th>
+                    <th>Text 1</th>
+                    <th>Text 2</th>
+                    <th>Added Date</th>
+                </tr>
+            </thead>
+            <tbody>
+            <%  Dim LogsConnection As SqlConnection
+	            Dim LogsCommand As SqlCommand
+	            Dim LogsReader As SqlDataReader
+	           
+                Dim sql As String
+                dim x as integer = 1
+	       	
+	            LogsConnection = New SqlConnection(System.Configuration.ConfigurationManager.ConnectionStrings("ProjectsConnection").ToString())
+	            LogsConnection.Open() 
+
+                sql = "Select Top (50) * from Log"
+                sql = sql & " where log_conId <> '" & Session("UserID") & "' and log_conId <> ''"
+                sql = sql & " order by log_addedDate desc"
+                    
+                LogsCommand = New SqlCommand(sql, LogsConnection)
+	            LogsReader = LogsCommand.ExecuteReader()
+	        
+                if LogsReader.hasrows() then    
+	                While LogsReader.Read()
+                        If (x Mod 2 = 0) = False Then%>
+		                    <tr>
+	                <%  Else%>
+		                    <tr class = "AlternateRow">
+	                <%  end if %>	
+
+	                        <td>
+		                    <%  Response.Write(x)
+		                        x = x + 1%>	               
+		                    </td>
+
+                            <td><%  If Not (LogsReader("log_conId") Is DBNull.Value) Then response.write(GetContactName(LogsReader("log_conId"))) Else Response.Write("N/A") %></td>
+                            <td><%  If Not (LogsReader("log_proId") Is DBNull.Value) Then response.write(GetProjectName(LogsReader("log_proId"))) Else Response.Write("N/A") %></td>
+                            <td><%  If Not (LogsReader("log_pagId") Is DBNull.Value) Then response.write(GetPageName(LogsReader("log_pagId"))) Else Response.Write("N/A") %></td>
+                            <td><%  If Not (LogsReader("log_Action") Is DBNull.Value) Then response.write(LogsReader("log_Action")) Else Response.Write("N/A") %></td>
+                            <td><%  If Not (LogsReader("log_text1") Is DBNull.Value) Then response.write(LogsReader("log_text1")) Else Response.Write("N/A") %></td>
+
+                        <%  If Not (LogsReader("log_text2") Is DBNull.Value) Then
+                                If LogsReader("log_text2") = "True" Then%>
+                                    <td class = "Yes">
+	                        <%  Else%>
+                                    <td class = "No">
+	                        <%  End If
+	                        Else%>
+	                            <td>	                        
+	                    <%  End If%>
+	                    
+	                        <%  If Not (LogsReader("log_text2") Is DBNull.Value) Then
+	                        Response.Write(LogsReader("log_text2"))
+	                            Else
+	                        Response.Write("N/A")
+	                            End If%>
+	                            </td>
+                            <td><%  If Not (LogsReader("log_addedDate") Is DBNull.Value) Then Response.Write(String.Format("{0:dd MMM yyy - h:mm tt}", LogsReader("log_addedDate"))) Else Response.Write("N/A")%></td>
+                        </tr>
+            <%      end while
+                else%>
+                    <tr>
+                        <td colspan = "8">No Logs from others to display</td>
+                    </tr>
+            <%  end if
+
+                LogsReader.close()
+                LogsConnection.close()%>
+            </tbody>    
+        </table>
+
 <%  end if %>
 </asp:Content>
 

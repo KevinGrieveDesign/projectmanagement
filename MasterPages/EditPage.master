@@ -125,8 +125,16 @@
             .FooterText
             {
                 color:Gray;
-                font-size:11px;
-                
+                font-size:11px;                
+            }
+            
+            .Yes
+            {
+                background-color:#ADDFAD;
+            }
+            .No
+            {
+                background-color:pink;
             }
         </style>
     </head>
@@ -156,7 +164,7 @@
             
             While LogoReader.Read()%>
                 <tr>
-                    <td  colspan = "2">
+                    <td  colspan = "3">
                         <img alt = "<%response.write(LogoReader("pag_Menuitem")) %>" src="<%response.write(LogoReader("pag_title2")) %>" />
                     </td>
                 </tr>
@@ -209,7 +217,7 @@
                     End If
                                  
                     If Title1 Or Title2 Then
-                        Response.Write("<tr><td colspan = '2' width = '970px'><br/>")
+                        Response.Write("<tr><td colspan = '3' width = '970px'><br/>")
                         HasHeader = True
                     End If
                 End If
@@ -232,14 +240,14 @@
             PageTitleReader.Close()
             PageTiteleConn.Close()%>
 
-            <tr class = "MainDiv">
-                <td width="150px"  valign="top" >
+            <tr class = "MainDiv"  height = "100%">
+                <td width="150px"  valign="top" class = "Menu" height = "700px"> 
                     <table>
                         <tr>
                             <td><%Response.Write(SecondaryHeading)%></td>
                         </tr>
-                        <tr>
-                            <td class = "Menu" width="150px" height = "700px" valign="top" >
+                        <tr >
+                            <td>
                                 <asp:ContentPlaceHolder id="Menu" runat="server"/>
                             <%  Dim WelcomeConnection As SqlConnection
                                 Dim WelcomeCommand As SqlCommand
@@ -276,6 +284,8 @@
                         </tr>                    
                     </table>
                 </td>
+                
+                <td>&nbsp;</td>
 
                 <td width="815px" align="left" valign="top">                    
                     <form id = "EditPage" method="post" runat="server">  
@@ -314,7 +324,7 @@
                 </td>
             </tr> 
             <tr>
-                <td class = "FooterText" colspan = "2">
+                <td class = "FooterText" colspan = "3">
                     <hr />
                     ABN Number: 47 980 420 796
                 </td>

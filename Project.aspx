@@ -129,60 +129,61 @@
                         ViewProjectTicket = AllowAction("viewProjectTicket", Request("project"))
 
                         If ViewProjectTicket = "True" And Request("ticket")  = "" Then%>
-
                             <h1>Summary</h1>
-                                <table width = "100%" border = "1">
-                                    <thead>
-       	                                <tr>
-       	                                    <th colspan = "2">Last Edited</th>       	     
-       	                                    <th colspan = "2">Open Tickets</th>
-       	                                </tr>
+
+                            <table width = "100%" border = "1">
+                                <thead>
+       	                            <tr>
+       	                                <th colspan = "2">Last Edited</th>       	     
+       	                                <th colspan = "2">Open Tickets</th>
+       	                            </tr>
        	        
-                                        <tr>
-                                            <th>User</th>
-                                            <th>Date</th>
-                                            <th>Bugs</th>
-                                            <th>Features</th>               
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                    <%  Dim ProjectsConnection As SqlConnection
-                                        Dim ProjectsCommand As SqlCommand
-                                        Dim ProjectsReader As SqlDataReader
+                                    <tr>
+                                        <th>User</th>
+                                        <th>Date</th>
+                                        <th>Bugs</th>
+                                        <th>Features</th>               
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                <%  Dim ProjectsConnection As SqlConnection
+                                    Dim ProjectsCommand As SqlCommand
+                                    Dim ProjectsReader As SqlDataReader
            
-                                        Dim sql As String
+                                    Dim sql As String
             
-                                        Dim x As Integer
-                                        x = 1
+                                    Dim x As Integer
+                                    x = 1
    
-                                        ProjectsConnection = New SqlConnection(System.Configuration.ConfigurationManager.ConnectionStrings("ProjectsConnection").ToString())
-                                        ProjectsConnection.Open()
+                                    ProjectsConnection = New SqlConnection(System.Configuration.ConfigurationManager.ConnectionStrings("ProjectsConnection").ToString())
+                                    ProjectsConnection.Open()
            
-                                        sql = "Select * from project"
-                                        sql = sql & " where pro_id = '" & request("project") & "'"
+                                    sql = "Select * from project"
+                                    sql = sql & " where pro_id = '" & request("project") & "'"
                      
-                                        ProjectsCommand = New SqlCommand(sql, ProjectsConnection)
-                                        ProjectsReader = ProjectsCommand.ExecuteReader()
+                                    ProjectsCommand = New SqlCommand(sql, ProjectsConnection)
+                                    ProjectsReader = ProjectsCommand.ExecuteReader()
                    
-                                        If ProjectsReader.HasRows Then
-                                            While ProjectsReader.Read()
-                                                If (x Mod 2 = 0) = False Then%>
-		                                            <tr>
-	                                        <%  Else%>
-		                                            <tr class = "AlternateRow">
-	                                        <%  end if %>
-	                                                <td><%  Response.Write(ProjectLastEditedBy(ProjectsReader("pro_id")))%> </td>
-	                                                <td><%  Response.Write(ProjectLastEditedDate(ProjectsReader("pro_id"), True))%>&nbsp;</td>                        
-	                                                <td><%  Response.Write(GetTicketCount(ProjectsReader("pro_id"), GetLookupDetails(0, "ticket_type", "Bug"))) %>&nbsp;</td>
-	                                                <td><%  Response.Write(GetTicketCount(ProjectsReader("pro_id"), GetLookupDetails(0, "ticket_type", "Feature"))) %>&nbsp;</td>
-		                                        </tr>
-                                        <%  End While
-                                        End If
+                                    If ProjectsReader.HasRows Then
+                                        While ProjectsReader.Read()
+                                            If (x Mod 2 = 0) = False Then%>
+		                                        <tr>
+	                                    <%  Else%>
+		                                        <tr class = "AlternateRow">
+	                                    <%  end if %>
+	                                            <td><%  Response.Write(ProjectLastEditedBy(ProjectsReader("pro_id")))%> </td>
+	                                            <td><%  Response.Write(ProjectLastEditedDate(ProjectsReader("pro_id"), True))%>&nbsp;</td>                        
+	                                            <td><%  Response.Write(GetTicketCount(ProjectsReader("pro_id"), GetLookupDetails(0, "ticket_type", "Bug"))) %>&nbsp;</td>
+	                                            <td><%  Response.Write(GetTicketCount(ProjectsReader("pro_id"), GetLookupDetails(0, "ticket_type", "Feature"))) %>&nbsp;</td>
+		                                    </tr>
+                                    <%  End While
+                                    End If
                                                     
-                                        ProjectsReader.Close()
-                                        ProjectsConnection.Close()%>
-                                    </tbody>
-                                </table>
+                                    ProjectsReader.Close()
+                                    ProjectsConnection.Close()%>
+                                </tbody>
+                            </table>
+
                             <h1>Open Tickets</h1>
 
                             <table border = "1" width = "100%">
@@ -259,7 +260,7 @@
 	                        
 	                                If y = 1 Then%>
 	                                    <tr>
-	                                        <td colspan = "9">There are no Open Tickets for <%  response.write(GetProjectName(Request("Project"))) %></td>
+	                                        <td colspan = "10">There are no Open Tickets for <%  response.write(GetProjectName(Request("Project"))) %></td>
 	                                    </tr>
 	                            <%  end if %>
 	                            </tbody>        
@@ -539,13 +540,13 @@
                                     <br /><br />
 
                                     Added By: <%Response.write(GetContactName(TicketNotesReader("note_addedBy"))) %><br />
-                                    Added Date: <%  Response.Write(String.Format("{0:dd MMM yyy &nb\sp;&nb\sp;&nb\sp; Ti\me: h:mm:ss tt}", TicketNotesReader("note_addedDate")))%>
+                                    Added Date: <%  Response.Write(String.Format("{0:dd MMM yyy &nb\sp;&nb\sp;&nb\sp; Ti\me: h:mm tt}", TicketNotesReader("note_addedDate")))%>
 
                                 <% if not (TicketNotesReader("note_editedBy") is dbnull.value) or not(TicketNotesReader("note_editedDate") is dbnull.value) then %>
                                         <br /><br />
 
                                         Edited By: <%Response.write(GetContactName(TicketNotesReader("note_editedBy"))) %><br />
-                                        Edited Date: <%  Response.Write(String.Format("{0:dd MMM yyy &nb\sp;&nb\sp;&nb\sp; Ti\me: h:mm:ss tt}", TicketNotesReader("note_editedDate")))%>
+                                        Edited Date: <%  Response.Write(String.Format("{0:dd MMM yyy &nb\sp;&nb\sp;&nb\sp; Ti\me: h:mm tt}", TicketNotesReader("note_editedDate")))%>
                                 <%  end if 
                                 
                                     if AllowAction("editTicketNote", request("project"), 0, TicketNotesReader("note_addedBy")) then %>

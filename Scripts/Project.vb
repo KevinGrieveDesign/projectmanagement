@@ -101,15 +101,16 @@ Function ProjectLastEditedDate(ByVal ProjectId As Integer, Optional ByVal Time A
 
     While LastEditedReader.Read()
         If Not (LastEditedReader("tic_editedDate") Is DBNull.Value) Then
-            If Time = True And (String.Format("{0:Ti\me: H:mm:ss}", LastEditedReader("tic_editedDate")) <> "0:00:00" Or String.Format("{0:Ti\me: H:mm:ss}", LastEditedReader("tic_editedDate")) <> "12:00:00") Then
-                LastEditedDate = String.Format("{0:\Da\te: dd MMM yyy}", LastEditedReader("tic_editedDate")) & "<br/>" & String.Format("{0:Ti\me: h:mm:ss tt}", LastEditedReader("tic_editedDate"))
+            If Time = True And String.Format("{0:h:mm}", LastEditedReader("tic_editedDate")) <> "12:00" And String.Format("{0:h:mm}", LastEditedReader("tic_editedDate")) <> "00:00" Then
+                LastEditedDate = String.Format("{0:\Da\te: dd MMM yyy}", LastEditedReader("tic_editedDate")) & "<br/>" & String.Format("{0:Ti\me: h:mm tt}", LastEditedReader("tic_editedDate"))
             Else
                 LastEditedDate = String.Format("{0:dd MMM yyy}", LastEditedReader("tic_editedDate"))
             End If
+            'LastEditedDate = LastEditedReader("tic_editedDate") & "jh"
             'do a date diff here and get the latest one 
         End If
-    End While
 
+    End While
     LastEditedReader.Close()
     LastEditedConnection.Close()
 
