@@ -187,11 +187,11 @@
 	                <%  End If%>
 	                    
 	                    <%  If Not (LogsReader("log_text2") Is DBNull.Value) Then
-	                    Response.Write(LogsReader("log_text2"))
+	                    		Response.Write(LogsReader("log_text2"))
 	                        Else
-	                    Response.Write("N/A")
+	                    		Response.Write("N/A")
 	                        End If%>
-	                        </td>
+                        </td>
                         <td><%  If Not (LogsReader("log_addedDate") Is DBNull.Value) Then Response.Write(String.Format("{0:dd MMM yyy - h:mm tt}", LogsReader("log_addedDate"))) Else Response.Write("N/A")%></td>
                     </tr>
             <%  End While

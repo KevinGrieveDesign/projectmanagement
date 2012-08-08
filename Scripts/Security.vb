@@ -274,3 +274,41 @@ Function GetSecurityGroupName(ByVal SecurityGroupID as integer) as string
     
     Return SecurityGroupName
 End Function
+
+'Params
+'	Input: String, Integer
+'	OutPut: Boolean
+'
+'This function checks to see if the project has a feature and out puts a true/false
+
+Function HasFeatures(ByVal Feature as string, ByVal ProjectId as Integer) as boolean 
+	Dim HasFeatureConnection As SqlConnection
+    Dim HasFeatureCommand As SqlCommand
+    Dim HasFeatureReader As SqlDataReader
+    
+    Dim sql as string
+    Dim HasFeatureBoolean as Boolean
+    
+    HasFeatureBoolean = False
+   
+    HasFeatureConnection = New SqlConnection(System.Configuration.ConfigurationManager.ConnectionStrings("ProjectsConnection").ToString())
+    HasFeatureConnection.Open()
+    
+    sql = "Select * from project_features "
+    sql = sql & " Where prof_proID = '" & ProjectId & "'"
+    sql = sql & " and prof_isActive = 'True'"
+   
+    HasFeatureCommand = New SqlCommand(sql, HasFeatureConnection)
+    HasFeatureReader = HasFeatureCommand.ExecuteReader()
+    
+    If HasFeatureReader.Hasrows() then
+    	HasFeatureBoolean = True
+    Else
+    	HasFeatureBoolean = False
+    End if
+            
+    HasFeatureReader.Close()
+    HasFeatureConnection.Close()
+    
+    Return HasFeatureBoolean
+End Function 
