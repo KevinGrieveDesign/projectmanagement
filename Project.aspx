@@ -694,12 +694,11 @@
                     				<tbody>
                     					<tr>	
                     						<td>Replied Status</td>
-                    						<td><select name='" & DropDownName & "' class = 'TextBox'>
+                    						<td><select name='Replied' class = 'TextBox'>
 							                        <option value ='' >--Please Choose--</option>
 							                        <option value ='Both' <%if request("replied") = "Both" then response.write("selected='selected'")%>>Both</option>
 							                        <option value ='True' <%if request("True") = "Both" then response.write("selected='selected'")%>>True</option>
-							                        <option value ='False' <%if request("False") = "Both" then response.write("selected='selected'")%>>False</option>
-							                    
+							                        <option value ='False' <%if request("False") = "Both" then response.write("selected='selected'")%>>False</option>							                    
 							                    </select>
 						                	</td>
                     					</tr>
@@ -712,7 +711,7 @@
                     				</tbody>
                     			</table>
                     			
-                    			<hr/>
+                    			<br/><hr/><br/><br/>
                     			
 	                    		<table width = "100%" border = "1">
 	                    			<thead>

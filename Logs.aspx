@@ -89,7 +89,7 @@
                         GetFilterDetailsReader = GetFilterDetailsCommand.ExecuteReader()
                                                 
                         while GetFilterDetailsReader.read()%>
-                            <option value = "<%  response.write(GetFilterDetailsReader("sit_name")) %>"><%  response.write(GetFilterDetailsReader("sit_description")) %></option>
+                            <option value = "<%  response.write(GetFilterDetailsReader("sit_securityItem")) %>"><%  response.write(GetFilterDetailsReader("sit_description")) %></option>
                     <%  End while
 
                         GetFilterDetailsReader.close() %>
