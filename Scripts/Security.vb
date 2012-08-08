@@ -263,7 +263,7 @@ Function GetSecurityGroupName(ByVal SecurityGroupID as integer) as string
     
     If SecurityGroupReader.Hasrows() then
     	While SecurityGroupReader.Read()
-    		SecurityGroupName = SecurityGroupReader("gsit_name")
+    		SecurityGroupName = SecurityGroupReader("gsit_description")
     	End While
     Else
     	SecurityGroupName = ""

@@ -113,8 +113,8 @@
                     <asp:MenuItem Text="Pages"  Value="2"  />
                     <asp:MenuItem Text="Repository" Value="3" />  
                     <asp:MenuItem Text="Features" Value="4" />--%>
-                    <asp:MenuItem Text="Roles" Value-"1" />
-                    <asp:MenuItem Text="Contact Us" Value-"2" />
+                    <asp:MenuItem Text="Roles" Value="1" />
+                    <asp:MenuItem Text="Contact Us" Value="2" />
                 </Items>  
             </asp:Menu>
    
@@ -618,7 +618,7 @@
                     			<thead>
                     				<tr>
                     					<th colspan = "3" class = "InvisibleRow">&nbsp;</th>
-                    					<th>Added</th>
+                    					<th colspan = "2">Added</th>
                     				</tr>
                     				
                     				<tr>
@@ -633,7 +633,7 @@
                     				<tr>
                     				<%  Dim ViewProjectRoleConnection as sqlconnection
                     					Dim ViewProjectRoleCommand as sqlcommand 
-                    					Dim ViewProjectRolesReader as sqldatareader
+                    					Dim ViewProjectRoleReader as sqldatareader
                     					
                     					Dim sql as string
                     					Dim x as integer
@@ -648,10 +648,10 @@
 			                            sql = sql & " order by cgsit_addedDate desc"
 				                
 				                        ViewProjectRoleCommand = New SqlCommand(sql, ViewProjectRoleConnection)
-				                        ViewProjectRolesReader = ViewProjectRoleCommand.ExecuteReader() 
+				                        ViewProjectRoleReader = ViewProjectRoleCommand.ExecuteReader() 
 			                                
-			                            if ViewProjectRolesReader.hasrows() then
-			                                while ViewProjectRolesReader.read() 
+			                            if ViewProjectRoleReader.hasrows() then
+			                                while ViewProjectRoleReader.read() 
 			                                	If (x Mod 2 = 0) = False Then%>
 				                                    <tr>
 			                                <%  Else%>
@@ -675,7 +675,7 @@
                     						</tr>
                     				<%  end if 
                     					
-                    					ViewProjectRolesReader.Close()
+                    					ViewProjectRoleReader.Close()
                     					ViewProjectRoleConnection.close()%>
                     				</tr>
                     			</tbody>
@@ -695,7 +695,7 @@
 	                    			<thead>
 	                    				<tr>
 	                    					<th class = "InvisibleRow">&nbsp;</th>
-	                    					<th>Contact</th>
+	                    					<th colspan = "3">Contact</th>
 	                    				</tr>
 	                    				
 	                    				<tr>
@@ -726,9 +726,9 @@
 					                        sql = sql & " where us_proId = '" & request("project") & "'"
 					                        
 					                        if request("Replied") = "" or request("Replied") = "False" then
-					                        	sql = sql " and us_replied = 'False' "
+					                        	sql = sql & " and us_replied = 'False' "
 					                        else
-					                        	sql = sql " and us_replied = 'True' " 
+					                        	sql = sql & " and us_replied = 'True' " 
 					                        end if
 					                        
 				                            sql = sql & " order by us_addedDate desc"
