@@ -696,9 +696,9 @@
                     						<td>Replied Status</td>
                     						<td><select name='Replied' class = 'TextBox'>
 							                        <option value ='' >--Please Choose--</option>
-							                        <option value ='Both' <%if request("replied") = "Both" then response.write("selected='selected'")%>>Both</option>
-							                        <option value ='True' <%if request("True") = "Both" then response.write("selected='selected'")%>>True</option>
-							                        <option value ='False' <%if request("False") = "Both" then response.write("selected='selected'")%>>False</option>							                    
+							                        <option value ='Both' <%if request("Replied") = "Both" then response.write("selected='selected'")%>>Both</option>
+							                        <option value ='True' <%if request("Replied") = "True" then response.write("selected='selected'")%>>True</option>
+							                        <option value ='False' <%if request("Replied") = "False" then response.write("selected='selected'")%>>False</option>							                    
 							                    </select>
 						                	</td>
                     					</tr>

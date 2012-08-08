@@ -339,7 +339,7 @@
                         <%  If Not (LogsReader("log_text2") Is DBNull.Value) Then
                                 If LogsReader("log_text2") = "True" Then%>
                                     <td class = "Yes">	                                
-		                    <%  Else if LogsReader("us_replied") = "False" then %>
+		                    <%  Else if LogsReader("log_text2") = "False" then %>
 	                                <td class = "No">
                             <%  else%>
                             		<td>

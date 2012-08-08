@@ -47,7 +47,7 @@
                         GetFilterDetailsReader = GetFilterDetailsCommand.ExecuteReader()
                                                 
                         while GetFilterDetailsReader.read()%>
-                            <option value = "<%  response.write(GetFilterDetailsReader("con_id")) %>"><%  response.write(GetContactName(GetFilterDetailsReader("con_id"))) %></option>
+                            <option <% if request("User") = Convert.Tostring(GetFilterDetailsReader("con_id")) then response.write("selected='selected'")%> value = "<%  response.write(GetFilterDetailsReader("con_id")) %>"><%  response.write(GetContactName(GetFilterDetailsReader("con_id"))) %></option>
                     <%  End while
 
                         GetFilterDetailsReader.close() %>
@@ -68,7 +68,7 @@
                         GetFilterDetailsReader = GetFilterDetailsCommand.ExecuteReader()
                                                 
                         while GetFilterDetailsReader.read()%>
-                            <option value = "<%  response.write(GetFilterDetailsReader("pro_id")) %>"><%  response.write(GetProjectName(GetFilterDetailsReader("pro_id"))) %></option>
+                            <option <% if request("Project") = Convert.Tostring(GetFilterDetailsReader("pro_id")) then response.write("selected='selected'")%> value = "<%  response.write(GetFilterDetailsReader("pro_id")) %>"><%  response.write(GetProjectName(GetFilterDetailsReader("pro_id"))) %></option>
                     <%  End while
 
                         GetFilterDetailsReader.close() %>
@@ -76,27 +76,6 @@
                 </td>
             </tr>
 
-            <tr>
-                <th>Action</th>
-                <td>&nbsp;</td>
-                <td>
-                    <select name='Action' class = 'TextBox'>
-                        <option value ='' >--Please Choose--</option>
-                    <%  sql = " Select * from security_Items "
-                        sql = sql & " order by sit_pagID"
-                    
-                        GetFilterDetailsCommand = New SqlCommand(sql, GetFilterDetailsConnection)
-                        GetFilterDetailsReader = GetFilterDetailsCommand.ExecuteReader()
-                                                
-                        while GetFilterDetailsReader.read()%>
-                            <option value = "<%  response.write(GetFilterDetailsReader("sit_securityItem")) %>"><%  response.write(GetFilterDetailsReader("sit_description")) %></option>
-                    <%  End while
-
-                        GetFilterDetailsReader.close() %>
-                    </select>
-                </td>
-            </tr>
-                
             <tr>
                 <td colspan = "3">&nbsp;</td>
             </tr>
@@ -123,6 +102,9 @@
 	
     Dim x As Integer
     Dim sql As String
+    Dim Action as string
+    
+    Action = request("Action")
     
     x = 1
     
@@ -136,6 +118,8 @@
     Else
         sql = "Select Top (" & Request("Limit") & ") * from Log"
     End If
+            
+    sql = sql & " where log_conId <> ''"
     
     if Request("Project") <> "" then 
     	sql = sql & " and log_proId = '" & request("Project") & "'" 
@@ -143,13 +127,14 @@
     
     if Request("User") <> "" then 
     	sql = sql & " and log_conId = '" & request("User") & "'" 
+	else
+		sql = sql & " and log_conId <> '" & Session("UserID") & "'"
 	end if 
 	
 	if Request("Action") <> "" then 
-		sql = sql & " and log_action = '" & request("Action") & "'" 
+		sql = sql & " and log_action = '" & Action & "'" 
 	end if
-        
-    sql = sql & " where log_conId <> '" & Session("UserID") & "' and log_conId <> ''"
+    
     sql = sql & " order by log_addedDate desc"
                     
     LogsCommand = New SqlCommand(sql, LogsConnection)
@@ -211,7 +196,7 @@
             <%  End While
             Else%>
                 <tr>
-                    <td colspan = ""></td>
+                    <td colspan = "8">No Logs Avaliable</td>
                 </tr>
         <%  End If%>
         </tbody>
