@@ -238,3 +238,39 @@ Function RenewSession(Optional ByVal SendToDashboard As Boolean = False) As Bool
     End If
 End Function
 
+'Params
+'	Input: Integer
+'	Output: String
+'
+'This takes the contact_securitygroupID Id and gives out the Security Group Name name 
+
+Function GetSecurityGroupName(ByVal SecurityGroupID as integer) as string
+    Dim SecurityGroupNameConnection As SqlConnection
+    Dim SecurityGroupCommand As SqlCommand
+    Dim SecurityGroupReader As SqlDataReader
+    
+    Dim sql as string
+    Dim SecurityGroupName as string
+   
+    SecurityGroupNameConnection = New SqlConnection(System.Configuration.ConfigurationManager.ConnectionStrings("ProjectsConnection").ToString())
+    SecurityGroupNameConnection.Open()
+    
+    sql = "Select * from security_group "
+    sql = sql & " Where gsit_id = '" & SecurityGroupID & "'"
+   
+    SecurityGroupCommand = New SqlCommand(sql, SecurityGroupNameConnection)
+    SecurityGroupReader = SecurityGroupCommand.ExecuteReader()
+    
+    If SecurityGroupReader.Hasrows() then
+    	While SecurityGroupReader.Read()
+    		SecurityGroupName = SecurityGroupReader("gsit_name")
+    	End While
+    Else
+    	SecurityGroupName = ""
+    End if
+            
+    SecurityGroupReader.Close()
+    SecurityGroupNameConnection.Close()
+    
+    Return SecurityGroupName
+End Function

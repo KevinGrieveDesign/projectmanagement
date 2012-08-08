@@ -109,11 +109,11 @@
 
                 <Items>
                     <asp:MenuItem Text="Tickets"  Value="0"  />
-                   <asp:MenuItem Text="Content" Value="1" />    
- <%--                    <asp:MenuItem Text="Pages"  Value="2"  />
+  <%--                  <asp:MenuItem Text="Content" Value="1" />    
+                    <asp:MenuItem Text="Pages"  Value="2"  />
                     <asp:MenuItem Text="Repository" Value="3" />  
-                    <asp:MenuItem Text="Features" Value="4" />
-                    <asp:MenuItem Text="Roles" Value-"5" --%>
+                    <asp:MenuItem Text="Features" Value="4" />--%>
+                    <asp:MenuItem Text="Roles" Value-"1" />
                 </Items>  
             </asp:Menu>
    
@@ -122,7 +122,7 @@
                            
                
 <%-- -------------------------------------------------------------------------------------------------------------------
---------------------------------------------View 1 - Activities-----------------------------------------------------------------
+--------------------------------------------View 1 - Tickets------------------------------------------------------------
 ------------------------------------------------------------------------------------------------------------------- --%>
                     <asp:View ID="View1" runat="server">
                     <%  Dim ViewProjectTicket As String
@@ -597,7 +597,7 @@
                         <br /><br />
                     </asp:View>
                     
-                    <asp:View ID="View2" runat="server">
+                    <%--<asp:View ID="View2" runat="server">
                     Content
                     </asp:View>
                     <asp:View ID="View3" runat="server">
@@ -608,7 +608,11 @@
                     </asp:View>
                     <asp:View ID="View5" runat="server">
                     Features
-                    </asp:View>
+                    </asp:View>--%>
+                    
+<%-- -------------------------------------------------------------------------------------------------------------------
+--------------------------------------------View 6 - Roles--------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------- --%>
                     <asp:View ID="View6" runat="server">
                     <%  if AllowAction("viewProjectRelationships", request("project")) then %>
                     		<table width = "100%" border = "1">
@@ -628,16 +632,63 @@
                     			</thead>
                     			<tbody>
                     				<tr>
-                    				
+                    				<%  Dim ViewProjectRoleConnection as sqlconnection
+                    					Dim ViewProjectRoleCommand as sqlcommand 
+                    					Dim  as sqldatareader
+                    					
+                    					Dim sql as string
+                    					Dim x as integer
+                    					
+                    					x = 1
+                    					
+                    					ViewProjectRoleConnection = New SqlConnection(System.Configuration.ConfigurationManager.ConnectionStrings("ProjectsConnection").ToString())
+				                        ViewProjectRoleConnection.Open()
+				                
+				                        sql = "Select * from contact_securityGroup "
+				                        sql = sql & " where cgsit_proId = '" & request("project") & "'"
+			                            sql = sql & " order by cgsit_addedDate"
+				                
+				                        ViewProjectRoleCommand = New SqlCommand(sql, ViewProjectRoleConnection)
+				                        ViewProjectRolesReader = ViewProjectRoleCommand.ExecuteReader() 
+			                                
+			                            if ViewProjectRolesReader.hasrows() then
+			                                while ViewProjectRolesReader.read() 
+			                                	If (x Mod 2 = 0) = False Then%>
+				                                    <tr>
+			                                <%  Else%>
+				                                    <tr class = "AlternateRow">
+			                                <%  end if %>
+			                                	
+				                                	<td>
+				                                	<%  Response.Write(x)
+				                                		x = x + 1%>
+		                                			</td>
+			                                		
+			                                		<td><%  if not(ViewProjectRoleReader("cgsit_conId") is dbnull.value) then Response.Write(GetContactName(ViewProjectRoleReader("cgsit_conId"))) else Response.write("N/A")%></td>
+			                                		<td><%  if not(ViewProjectRoleReader("cgsit_gsitId") is dbnull.value) then Response.Write(GetSecurityGroupName(ViewProjectRoleReader("cgsit_gsitId"))) else Response.write("N/A")%></td>
+			                                		<td><%  if not(ViewProjectRoleReader("cgsit_addedBy") is dbnull.value) then Response.Write(GetContactName(ViewProjectRoleReader("cgsit_addedBy"))) else Response.write("N/A")%></td>
+			                                		<td><%  if not(ViewProjectRoleReader("cgsit_addedDate") is dbnull.value) then Response.Write(String.Format("{0:dd MMM yyy}", ViewProjectRoleReader("cgsit_addedDate"))) else Response.write("N/A")%></td>                            		
+			                                	</tr>
+			                            <%  End while 
+                    					else%>
+                    						<tr>
+                    							<td colspan = "5">There are no Roles for this Project</td>
+                    						</tr>
+                    				<%  end if 
+                    					
+                    					ViewProjectRolesReader.Close()
+                    					ViewProjectRoleConnection.close()%>
                     				</tr>
                     			</tbody>
                     		<table>
+            		<%  else %>
+        					You do not have access to view the Roles for ths project
                     <%  end if %>
                     </asp:View>
                 </asp:MultiView>
             </div>
     <%  else %>
-            not allowed
+            You do not have access to view this Project
 	<% 	end if
 	end if%>
 </asp:Content>
