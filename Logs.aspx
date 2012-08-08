@@ -30,14 +30,14 @@
             <tr>
                 <th width = "70">Limit</th>
                 <td>&nbsp;</td>
-                <td><input class = "TextBox" name="Limit" size = "5"  maxlength="100" <%if request("Limit") <> "" then  %> value="<%Response.write(Request("Limit"))%>" <%else %>  Value="50" <%end if%> /></td>
+                <td><input class = "TextBox" name="Limit" size = "4"  maxlength="100" <%if request("Limit") <> "" then  %> value="<%Response.write(Request("Limit"))%>" <%else %>  Value="50" <%end if%> /></td>
             </tr>
 
             <tr>
                 <th>User</th>
                 <td>&nbsp;</td>                
                 <td>
-                    <select name='" & DropDownName & "' class = 'TextBox'>
+                    <select name='User' class = 'TextBox'>
                         <option value ='' >--Please Choose--</option>
                     <%  sql = " Select * from contact "
                         sql = sql & " where con_typeID = '" & GetlookupDetails(0, "contact_type", "Individual")  & "'"
@@ -59,7 +59,7 @@
                 <th>Project</th>
                 <td>&nbsp;</td>
                 <td>
-                    <select name='" & DropDownName & "' class = 'TextBox'>
+                    <select name='Project' class = 'TextBox'>
                         <option value ='' >--Please Choose--</option>
                     <%  sql = " Select * from project "
                         sql = sql & " order by pro_Name"
@@ -80,7 +80,7 @@
                 <th>Action</th>
                 <td>&nbsp;</td>
                 <td>
-                    <select name='" & DropDownName & "' class = 'TextBox'>
+                    <select name='Action' class = 'TextBox'>
                         <option value ='' >--Please Choose--</option>
                     <%  sql = " Select * from security_Items "
                         sql = sql & " order by sit_pagID"
@@ -89,7 +89,7 @@
                         GetFilterDetailsReader = GetFilterDetailsCommand.ExecuteReader()
                                                 
                         while GetFilterDetailsReader.read()%>
-                            <option value = "<%  response.write(GetFilterDetailsReader("sit_id")) %>"><%  response.write(GetFilterDetailsReader("sit_description")) %></option>
+                            <option value = "<%  response.write(GetFilterDetailsReader("sit_name")) %>"><%  response.write(GetFilterDetailsReader("sit_description")) %></option>
                     <%  End while
 
                         GetFilterDetailsReader.close() %>
@@ -136,6 +136,18 @@
     Else
         sql = "Select Top (" & Request("Limit") & ") * from Log"
     End If
+    
+    if Request("Project") <> "" then 
+    	sql = sql & " and log_proId = '" & request("Project") & "'" 
+    end if
+    
+    if Request("User") <> "" then 
+    	sql = sql & " and log_conId = '" & request("User") & "'" 
+	end if 
+	
+	if Request("Action") <> "" then 
+		sql = sql & " and log_action = '" & request("Action") & "'" 
+	end if
         
     sql = sql & " where log_conId <> '" & Session("UserID") & "' and log_conId <> ''"
     sql = sql & " order by log_addedDate desc"

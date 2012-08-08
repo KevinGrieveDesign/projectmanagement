@@ -689,6 +689,31 @@
                      <asp:View ID="View2" runat="server">
                 	<%  If HasFeatures("ContactUs", request("project")) = True then
                     		if AllowAction("viewProjectContactUs", request("project")) then %>
+                    		
+                    			<table>
+                    				<tbody>
+                    					<tr>	
+                    						<td>Replied Status</td>
+                    						<td><select name='" & DropDownName & "' class = 'TextBox'>
+							                        <option value ='' >--Please Choose--</option>
+							                        <option value ='Both' <%if request("replied") = "Both" then response.write("selected='selected'")%>>Both</option>
+							                        <option value ='True' <%if request("True") = "Both" then response.write("selected='selected'")%>>True</option>
+							                        <option value ='False' <%if request("False") = "Both" then response.write("selected='selected'")%>>False</option>
+							                    
+							                    </select>
+						                	</td>
+                    					</tr>
+                    					<tr>
+                    						<td>&nbsp;</td>
+                    					</tr>
+                    					<tr>
+                    						<td><input class = "Button"  type = "submit" name = "FilterContactUs" value = "Filter" /></td>
+                    					</tr>
+                    				</tbody>
+                    			</table>
+                    			
+                    			<hr/>
+                    			
 	                    		<table width = "100%" border = "1">
 	                    			<thead>
 	                    				<tr>
@@ -725,7 +750,7 @@
 				                        
 				                        if request("Replied") = "" or request("Replied") = "False" then
 				                        	sql = sql & " and us_replied = 'False' "
-				                        else
+				                        elseif request("Replied") = "True"
 				                        	sql = sql & " and us_replied = 'True' " 
 				                        end if
 				                        
@@ -786,7 +811,7 @@
 			                            <%  End while 
                     					else%>
                     						<tr>
-                    							<td colspan = "7">There is no Contact Us Information for this Project</td>
+                    							<td colspan = "8">There is no Contact Us Information for this Project</td>
                     						</tr>
                     				<%  end if 
                     					
