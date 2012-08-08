@@ -170,7 +170,7 @@ Function ViewPage(ByVal PageId As Integer, Optional ByVal ProjectId As Integer =
         ViewPageConnection.close()
 
         If ViewPageResult = False And Location = "" Then
-            LogAction("ViewPage", ProjectId, 0, PageId, "", True)
+            LogAction("ViewPage", ProjectId, 0, PageId, "ViewPage", True)
 
             RenewSession(True)
         Else
@@ -309,6 +309,8 @@ Function HasFeatures(ByVal Feature as string, ByVal ProjectId as Integer) as boo
             
     HasFeatureReader.Close()
     HasFeatureConnection.Close()
+    
+    LogAction("HasFeature", ProjectId, 0, 0, Feature, HasFeatureBoolean)    
     
     Return HasFeatureBoolean
 End Function 

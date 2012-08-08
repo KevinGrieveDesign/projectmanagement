@@ -179,9 +179,11 @@
                     <%  If Not (LogsReader("log_text2") Is DBNull.Value) Then
                             If LogsReader("log_text2") = "True" Then%>
                                 <td class = "Yes">
-	                    <%  Else%>
-                                <td class = "No">
-	                    <%  End If
+                		<%  Else if ViewContactUsReader("us_replied") = "False" then %>
+		                        <td class = "No">
+		                <%  else%>
+		                		<td>
+		                <%  End If
 	                    Else%>
 	                        <td>	                        
 	                <%  End If%>

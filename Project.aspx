@@ -630,56 +630,54 @@
                 					</tr>                					
                     			</thead>
                     			<tbody>
-                    				<tr>
-                    				<%  Dim ViewProjectRoleConnection as sqlconnection
-                    					Dim ViewProjectRoleCommand as sqlcommand 
-                    					Dim ViewProjectRoleReader as sqldatareader
-                    					
-                    					Dim sql as string
-                    					Dim x as integer
-                    					
-                    					x = 1
-                    					
-                    					ViewProjectRoleConnection = New SqlConnection(System.Configuration.ConfigurationManager.ConnectionStrings("ProjectsConnection").ToString())
-				                        ViewProjectRoleConnection.Open()
-				                
-				                        sql = "Select * from contact_securityGroup "
-				                        sql = sql & " where cgsit_proId = '" & request("project") & "'"
-			                            sql = sql & " order by cgsit_addedDate desc"
-				                
-				                        ViewProjectRoleCommand = New SqlCommand(sql, ViewProjectRoleConnection)
-				                        ViewProjectRoleReader = ViewProjectRoleCommand.ExecuteReader() 
-			                                
-			                            if ViewProjectRoleReader.hasrows() then
-			                                while ViewProjectRoleReader.read() 
-			                                	If (x Mod 2 = 0) = False Then%>
-				                                    <tr>
-			                                <%  Else%>
-				                                    <tr class = "AlternateRow">
-			                                <%  end if %>
-			                                	
-				                                	<td>
-				                                	<%  Response.Write(x)
-				                                		x = x + 1%>
-		                                			</td>
-			                                		
-			                                		<td><%  if not(ViewProjectRoleReader("cgsit_conId") is dbnull.value) then Response.Write(GetContactName(ViewProjectRoleReader("cgsit_conId"))) else Response.write("N/A")%></td>
-			                                		<td><%  if not(ViewProjectRoleReader("cgsit_gsitId") is dbnull.value) then Response.Write(GetSecurityGroupName(ViewProjectRoleReader("cgsit_gsitId"))) else Response.write("N/A")%></td>
-			                                		<td><%  if not(ViewProjectRoleReader("cgsit_addedBy") is dbnull.value) then Response.Write(GetContactName(ViewProjectRoleReader("cgsit_addedBy"))) else Response.write("N/A")%></td>
-			                                		<td><%  if not(ViewProjectRoleReader("cgsit_addedDate") is dbnull.value) then Response.Write(String.Format("{0:dd MMM yyy}", ViewProjectRoleReader("cgsit_addedDate"))) else Response.write("N/A")%></td>                            		
-			                                	</tr>
-			                            <%  End while 
-                    					else%>
-                    						<tr>
-                    							<td colspan = "5">There are no Roles for this Project</td>
-                    						</tr>
-                    				<%  end if 
-                    					
-                    					ViewProjectRoleReader.Close()
-                    					ViewProjectRoleConnection.close()%>
-                    				</tr>
+                				<%  Dim ViewProjectRoleConnection as sqlconnection
+                					Dim ViewProjectRoleCommand as sqlcommand 
+                					Dim ViewProjectRoleReader as sqldatareader
+                					
+                					Dim sql as string
+                					Dim x as integer
+                					
+                					x = 1
+                					
+                					ViewProjectRoleConnection = New SqlConnection(System.Configuration.ConfigurationManager.ConnectionStrings("ProjectsConnection").ToString())
+			                        ViewProjectRoleConnection.Open()
+			                
+			                        sql = "Select * from contact_securityGroup "
+			                        sql = sql & " where cgsit_proId = '" & request("project") & "'"
+		                            sql = sql & " order by cgsit_addedDate desc"
+			                
+			                        ViewProjectRoleCommand = New SqlCommand(sql, ViewProjectRoleConnection)
+			                        ViewProjectRoleReader = ViewProjectRoleCommand.ExecuteReader() 
+		                                
+		                            if ViewProjectRoleReader.hasrows() then
+		                                while ViewProjectRoleReader.read() 
+		                                	If (x Mod 2 = 0) = False Then%>
+			                                    <tr>
+		                                <%  Else%>
+			                                    <tr class = "AlternateRow">
+		                                <%  end if %>
+		                                	
+			                                	<td>
+			                                	<%  Response.Write(x)
+			                                		x = x + 1%>
+	                                			</td>
+		                                		
+		                                		<td><%  if not(ViewProjectRoleReader("cgsit_conId") is dbnull.value) then Response.Write(GetContactName(ViewProjectRoleReader("cgsit_conId"))) else Response.write("N/A")%></td>
+		                                		<td><%  if not(ViewProjectRoleReader("cgsit_gsitId") is dbnull.value) then Response.Write(GetSecurityGroupName(ViewProjectRoleReader("cgsit_gsitId"))) else Response.write("N/A")%></td>
+		                                		<td><%  if not(ViewProjectRoleReader("cgsit_addedBy") is dbnull.value) then Response.Write(GetContactName(ViewProjectRoleReader("cgsit_addedBy"))) else Response.write("N/A")%></td>
+		                                		<td><%  if not(ViewProjectRoleReader("cgsit_addedDate") is dbnull.value) then Response.Write(String.Format("{0:dd MMM yyy}", ViewProjectRoleReader("cgsit_addedDate"))) else Response.write("N/A")%></td>                            		
+		                                	</tr>
+		                            <%  End while 
+	            					else%>
+	            						<tr>
+	            							<td colspan = "5">There are no Roles for this Project</td>
+	            						</tr>
+                				<%  end if 
+	                					
+                					ViewProjectRoleReader.Close()
+                					ViewProjectRoleConnection.close()%>
                     			</tbody>
-                    		<table>
+                    		</table>
             		<%  else %>
         					You do not have access to view the Roles for ths Project
                     <%  end if %>
@@ -709,79 +707,79 @@
 	                					</tr>                					
 	                    			</thead>
 	                    			<tbody>
-	                    				<tr>
-	                    				<%  Dim ViewContactUsConnection as sqlconnection
-	                    					Dim ViewContactUsCommand as sqlcommand 
-	                    					Dim ViewContactUsReader as sqldatareader
-	                    					
-	                    					Dim sql as string
-	                    					Dim x as integer
-	                    					
-	                    					x = 1
-	                    					
-	                    					ViewContactUsConnection = New SqlConnection(System.Configuration.ConfigurationManager.ConnectionStrings("ProjectsConnection").ToString())
-					                        ViewContactUsConnection.Open()
-					                
-					                        sql = "Select * from contact_us "
-					                        sql = sql & " where us_proId = '" & request("project") & "'"
-					                        
-					                        if request("Replied") = "" or request("Replied") = "False" then
-					                        	sql = sql & " and us_replied = 'False' "
-					                        else
-					                        	sql = sql & " and us_replied = 'True' " 
-					                        end if
-					                        
-				                            sql = sql & " order by us_addedDate desc"
-					                
-					                        ViewContactUsCommand = New SqlCommand(sql, ViewContactUsConnection)
-					                        ViewContactUsReader = ViewContactUsCommand.ExecuteReader() 
-				                                
-				                            if ViewContactUsReader.hasrows() then
-				                                while ViewContactUsReader.read() 
-				                                	If (x Mod 2 = 0) = False Then%>
-					                                    <tr>
-				                                <%  Else%>
-					                                    <tr class = "AlternateRow">
-				                                <%  end if %>
-				                                	
-					                                	<td>
-					                                	<%  Response.Write(x)
-					                                		x = x + 1%>
-			                                			</td>
-				                                		
-				                                		<td><%  if not(ViewContactUsReader("us_contactName") is dbnull.value) then Response.Write(ViewContactUsReader("us_contactName")) else Response.write("N/A")%></td>
-				                                		<td><%  if not(ViewContactUsReader("us_contactPhone") is dbnull.value) then Response.Write(ViewContactUsReader("us_contactPhone")) else Response.write("N/A")%></td>
-				                                		<td><%  if not(ViewContactUsReader("us_contactEmail") is dbnull.value) then Response.Write(ViewContactUsReader("us_contactEmail")) else Response.write("N/A")%></td>
-				                                		<td><%  if not(ViewContactUsReader("us_text") is dbnull.value) then Response.Write(ViewContactUsReader("us_text")) else Response.write("N/A")%></td>				                                					                                		
-				                                		<td><%  if not(ViewContactUsReader("us_addedDate") is dbnull.value) then Response.Write(String.Format("{0:dd MMM yyy}", ViewContactUsReader("us_addedDate"))) else Response.write("N/A")%></td>  
-				                                		
-			                                		<%  If Not (ViewContactUsReader("us_replied") Is DBNull.Value) Then
-								                            If ViewContactUsReader("us_replied") = "True" Then%>
-								                                <td class = "Yes">
-									                    <%  Else%>
-								                                <td class = "No">
-									                    <%  End If
-									                    Else%>
-									                        <td>	                        
-									                <%  End If%>
-									                    
-									                    <%  If Not (ViewContactUsReader("us_replied") Is DBNull.Value) Then
-									                    		Response.Write(ViewContactUsReader("us_replied"))
-									                        Else
-									                    		Response.Write("N/A")
-									                        End If%>
-								                        </td>                         		
-				                                	</tr>
-				                            <%  End while 
-	                    					else%>
-	                    						<tr>
-	                    							<td colspan = "7">There is no Contact Us Information for this Project</td>
-	                    						</tr>
-	                    				<%  end if 
-	                    					
-	                    					ViewContactUsReader.Close()
-	                    					ViewContactUsConnection.close()%>
-	                    				</tr>
+                    				<%  Dim ViewContactUsConnection as sqlconnection
+                    					Dim ViewContactUsCommand as sqlcommand 
+                    					Dim ViewContactUsReader as sqldatareader
+                    					
+                    					Dim sql as string
+                    					Dim x as integer
+                    					
+                    					x = 1
+                    					
+                    					ViewContactUsConnection = New SqlConnection(System.Configuration.ConfigurationManager.ConnectionStrings("ProjectsConnection").ToString())
+				                        ViewContactUsConnection.Open()
+				                
+				                        sql = "Select * from contact_us "
+				                        sql = sql & " where us_proId = '" & request("project") & "'"
+				                        
+				                        if request("Replied") = "" or request("Replied") = "False" then
+				                        	sql = sql & " and us_replied = 'False' "
+				                        else
+				                        	sql = sql & " and us_replied = 'True' " 
+				                        end if
+				                        
+			                            sql = sql & " order by us_addedDate desc"
+				                
+				                        ViewContactUsCommand = New SqlCommand(sql, ViewContactUsConnection)
+				                        ViewContactUsReader = ViewContactUsCommand.ExecuteReader() 
+			                                
+			                            if ViewContactUsReader.hasrows() then
+			                                while ViewContactUsReader.read() 
+			                                	If (x Mod 2 = 0) = False Then%>
+				                                    <tr>
+			                                <%  Else%>
+				                                    <tr class = "AlternateRow">
+			                                <%  end if %>
+			                                	
+				                                	<td>
+				                                	<%  Response.Write(x)
+				                                		x = x + 1%>
+		                                			</td>
+			                                		
+			                                		<td><%  if not(ViewContactUsReader("us_contactName") is dbnull.value) then Response.Write(ViewContactUsReader("us_contactName")) else Response.write("N/A")%></td>
+			                                		<td><%  if not(ViewContactUsReader("us_contactPhone") is dbnull.value) then Response.Write(ViewContactUsReader("us_contactPhone")) else Response.write("N/A")%></td>
+			                                		<td><%  if not(ViewContactUsReader("us_contactEmail") is dbnull.value) then Response.Write(ViewContactUsReader("us_contactEmail")) else Response.write("N/A")%></td>
+			                                		<td><%  if not(ViewContactUsReader("us_text") is dbnull.value) then Response.Write(ViewContactUsReader("us_text")) else Response.write("N/A")%></td>				                                					                                		
+			                                		<td><%  if not(ViewContactUsReader("us_addedDate") is dbnull.value) then Response.Write(String.Format("{0:dd MMM yyy}", ViewContactUsReader("us_addedDate"))) else Response.write("N/A")%></td>  
+			                                		
+		                                		<%  If Not (ViewContactUsReader("us_replied") Is DBNull.Value) Then
+							                            If ViewContactUsReader("us_replied") = "True" Then%>
+							                                <td class = "Yes">
+								                    <%  Else if ViewContactUsReader("us_replied") = "False" then %>
+							                                <td class = "No">
+					                                <%  else%>
+					                                		<td>
+								                    <%  End If
+								                    Else%>
+								                        <td>	                        
+								                <%  End If%>
+								                    
+								                    <%  If Not (ViewContactUsReader("us_replied") Is DBNull.Value) Then
+								                    		Response.Write(ViewContactUsReader("us_replied"))
+								                        Else
+								                    		Response.Write("N/A")
+								                        End If%>
+							                        </td>                         		
+			                                	</tr>
+			                            <%  End while 
+                    					else%>
+                    						<tr>
+                    							<td colspan = "7">There is no Contact Us Information for this Project</td>
+                    						</tr>
+                    				<%  end if 
+                    					
+                    					ViewContactUsReader.Close()
+                    					ViewContactUsConnection.close()%>
 	                    			</tbody>
 	                    		<table>
 	            		<%  else %>
