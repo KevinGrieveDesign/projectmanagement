@@ -468,3 +468,44 @@ Sub WatchTicket()
         response.redirect("project.aspx?project=" & request("project") & "&ticket=" & request("ticket"))
     End If
 End Sub
+
+Sub Replied(ByVal ContactUsId as integer) 
+	If request.Form("ReplySent") = "Reply Sent" or request.Form("CancelReply") = "Cancel Reply" then
+		Dim ReplySentConnection As SqlConnection
+        Dim ReplySentCommand As SqlCommand
+        Dim ReplySent As Integer
+	
+		Dim sql as string
+		Dim RedirectString as string
+		
+		if request.Form("CancelReply") = "Cancel Reply" then 
+        	LogAction("CancelReply", request("project"), 0, 0, ContactUsId)
+        else if request.Form("ReplySent") = "Reply Sent" then 
+        	LogAction("ReplySent", request("project"), 0, 0, ContactUsId)
+        end if 
+        				
+		ReplySentConnection = New SqlConnection(System.Configuration.ConfigurationManager.ConnectionStrings("ProjectsConnection").ToString())
+        ReplySentConnection.Open()
+        
+        sql = "Update contact_us"
+        
+        if request.Form("CancelReply") = "Cancel Reply" then 
+        	sql = sql & " Set us_replied = 'False'"
+        else if request.Form("ReplySent") = "Reply Sent" then 
+        	sql = sql & " Set us_replied = 'True'"
+        end if 
+        
+        sql = sql & " Where us_id = '" & ContactUsId & "'"
+		
+		ReplySentCommand = New SqlCommand(sql, ReplySentConnection)
+        ReplySent = ReplySentCommand.ExecuteNonQuery()
+
+        ReplySentConnection.close()
+		
+		RedirectString = "project.aspx"
+		RedirectString = RedirectString & "?project=" & request("project") 
+		RedirectString = RedirectString & "&view=2"
+		
+		Response.redirect(RedirectString)
+	End if
+End Sub

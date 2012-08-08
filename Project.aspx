@@ -704,6 +704,7 @@
 	                    					<th>Description</th>
 	                    					<th>Added</th>
 	                    					<th>Replied</th>
+	                    					<th>Action</th>
 	                					</tr>                					
 	                    			</thead>
 	                    			<tbody>
@@ -769,7 +770,18 @@
 								                        Else
 								                    		Response.Write("N/A")
 								                        End If%>
-							                        </td>                         		
+							                        </td>
+							                        <td>
+							                        <%  if ViewContactUsReader("us_replied") Is DBNull.Value then %>
+						                        			<input class = "Button"  type = "submit" name = "ReplySent" value = "Reply Sent" onclick = "<%Replied(ViewContactUsReader("us_id"))%>" />  
+						                        	<%  else
+						                        			if ViewContactUsReader("us_replied") = "False" then%>
+						                        				<input class = "Button"  type = "submit" name = "ReplySent" value = "Reply Sent" onclick = "<%Replied(ViewContactUsReader("us_id"))%>" />  
+					                        			<%  else%>
+					                        					<input class = "Button"  type = "submit" name = "CancelReply" value = "Cancel Reply" onclick = "<%Replied(ViewContactUsReader("us_id"))%>" />  
+					                        			<%  end if
+				                        				end if%>					                        			
+					                                </td>                 		
 			                                	</tr>
 			                            <%  End while 
                     					else%>
@@ -781,7 +793,7 @@
                     					ViewContactUsReader.Close()
                     					ViewContactUsConnection.close()%>
 	                    			</tbody>
-	                    		<table>
+	                    		</table>
 	            		<%  else %>
 	        					You do not have access to view the Contact Us Information for ths Project
 	                    <%  end if 

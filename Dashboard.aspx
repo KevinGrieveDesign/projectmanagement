@@ -310,7 +310,7 @@
 	            LogsConnection = New SqlConnection(System.Configuration.ConfigurationManager.ConnectionStrings("ProjectsConnection").ToString())
 	            LogsConnection.Open() 
 
-                sql = "Select Top (50) * from Log"
+                sql = "Select Top (40) * from Log"
                 sql = sql & " where log_conId <> '" & Session("UserID") & "' and log_conId <> ''"
                 sql = sql & " order by log_addedDate desc"
                     
@@ -338,18 +338,20 @@
 
                         <%  If Not (LogsReader("log_text2") Is DBNull.Value) Then
                                 If LogsReader("log_text2") = "True" Then%>
-                                    <td class = "Yes">
-	                        <%  Else%>
-                                    <td class = "No">
-	                        <%  End If
+                                    <td class = "Yes">	                                
+		                    <%  Else if LogsReader("us_replied") = "False" then %>
+	                                <td class = "No">
+                            <%  else%>
+                            		<td>
+		                    <%  End If
 	                        Else%>
 	                            <td>	                        
 	                    <%  End If%>
 	                    
 	                        <%  If Not (LogsReader("log_text2") Is DBNull.Value) Then
-	                        Response.Write(LogsReader("log_text2"))
+                    				Response.Write(LogsReader("log_text2"))
 	                            Else
-	                        Response.Write("N/A")
+	                        		Response.Write("N/A")
 	                            End If%>
 	                            </td>
                             <td><%  If Not (LogsReader("log_addedDate") Is DBNull.Value) Then Response.Write(String.Format("{0:dd MMM yyy - h:mm tt}", LogsReader("log_addedDate"))) Else Response.Write("N/A")%></td>
