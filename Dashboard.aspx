@@ -239,17 +239,7 @@
 	                    	<td><%  If Not (TicketsReader("tic_proId") Is DBNull.Value) Then Response.Write(GetProjectName(TicketsReader("tic_proId"))) Else Response.Write("N/A")%> </td>                        
 	                        <td><%  If Not (TicketsReader("tic_id") Is DBNull.Value) Then Response.Write(GetTicketName(TicketsReader("tic_id"))) Else Response.Write("N/A")%></td>
 	                        <td><%  If Not (TicketsReader("tic_status") Is DBNull.Value) Then Response.Write(GetLookupDetails(TicketsReader("tic_status"))) Else Response.Write("N/A")%> </td>
-
-                        <%  if Not (TicketsReader("tic_priority") Is DBNull.Value)
-                                if GetLookupDetails(TicketsReader("tic_priority")) = "Urgent" or GetLookupDetails(TicketsReader("tic_priority")) = "Immediate" then%>
-	                                <td class = "No"><b><%  Response.Write(GetLookupDetails(TicketsReader("tic_priority")))%> </b></td>
-                            <%  else %>
-                                    <td><%  Response.Write(GetLookupDetails(TicketsReader("tic_priority")))%></td>
-                            <%  end if
-                            else%>
-                                <td>N/A</td>
-                        <%  end if %>
-                            
+                            <td <% PriorityColour(GetLookupDetails(TicketsReader("tic_priority")))%>><% If Not (TicketsReader("tic_priority") Is DBNull.Value) Then Response.Write(GetLookupDetails(TicketsReader("tic_priority"))) Else Response.Write("N/A")%> </td>                             
 	                        <td><%  If Not (TicketsReader("tic_typeID") Is DBNull.Value) Then Response.Write(GetLookupDetails(TicketsReader("tic_typeID"))) Else Response.Write("N/A")%> </td>
 	                        <td><%  If Not (TicketsReader("tic_assignedTo") Is DBNull.Value) Then Response.Write(GetContactName(TicketsReader("tic_assignedTo"))) Else Response.Write("N/A")%> </td>
 	                        <td><%  If Not (TicketsReader("tic_addedby") Is DBNull.Value) Then Response.Write(GetContactName(TicketsReader("tic_addedby"))) Else Response.Write("N/A")%> </td>

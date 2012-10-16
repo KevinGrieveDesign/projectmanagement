@@ -96,13 +96,7 @@
         If AllowAction("", Request("project")) Then%>
 
 			<h1><%  Response.write(GetProjectName(request("project"))) %></h1><br />
-			
-		<%  Dim GetProjectOwnerConnection as sqlConnection
-			Dim GetProjectOwnerCommand as sqlcommand
-			Dim GetProjectOwnerReader as sqldataReader
-			
-			Dim sql as string %>
-
+		
             <asp:Menu id="Menu1" Orientation="Horizontal" 
                       StaticSelectedStyle-CssClass="selectedTab" Runat="server"
                       CssClass="tabs" OnMenuItemClick="Menu1_MenuItemClick"   StaticMenuItemStyle-CssClass="tab"  RenderingMode = "Table" >
@@ -110,11 +104,11 @@
                 <Items>
                     <asp:MenuItem Text="Tickets"  Value="0"  />
   <%--                  <asp:MenuItem Text="Content" Value="1" />    
-                    <asp:MenuItem Text="Pages"  Value="2"  />
-                    <asp:MenuItem Text="Repository" Value="3" />  
-                    <asp:MenuItem Text="Features" Value="4" />--%>
-                    <asp:MenuItem Text="Roles" Value="1" />
-                    <asp:MenuItem Text="Contact Us" Value="2" />
+                    <asp:MenuItem Text="Pages"  Value="2"  />--%>
+                    <asp:MenuItem Text="Repository" Value="1" />  
+                    <%--<asp:MenuItem Text="Features" Value="4" />--%>
+                    <asp:MenuItem Text="Roles" Value="2" />
+                    <asp:MenuItem Text="Contact Us" Value="3" />
                 </Items>  
             </asp:Menu>
    
@@ -246,7 +240,7 @@
 		                    
 	                                        <td><%  Response.Write(GetTicketName(TicketsReader("tic_id")))%></td>
 	                                        <td><%  If Not (TicketsReader("tic_status") Is DBNull.Value) Then Response.Write(GetLookupDetails(TicketsReader("tic_status"))) Else Response.Write("N/A")%> </td>
-	                                        <td><%  If Not (TicketsReader("tic_priority") Is DBNull.Value) Then Response.Write(GetLookupDetails(TicketsReader("tic_priority"))) Else Response.Write("N/A")%> </td>
+                                            <td <% PriorityColour(GetLookupDetails(TicketsReader("tic_priority")))%>><% If Not (TicketsReader("tic_priority") Is DBNull.Value) Then Response.Write(GetLookupDetails(TicketsReader("tic_priority"))) Else Response.Write("N/A")%> </td>                             
 	                                        <td><%  If Not (TicketsReader("tic_typeID") Is DBNull.Value) Then Response.Write(GetLookupDetails(TicketsReader("tic_typeID"))) Else Response.Write("N/A")%> </td>
 	                                        <td><%  If Not (TicketsReader("tic_assignedTo") Is DBNull.Value) Then Response.Write(GetContactName(TicketsReader("tic_assignedTo"))) Else Response.Write("N/A")%> </td>
 	                                        <td><%  If Not (TicketsReader("tic_addedby") Is DBNull.Value) Then Response.Write(GetContactName(TicketsReader("tic_addedby"))) Else Response.Write("N/A")%> </td>
@@ -290,7 +284,7 @@
                                         </thead>
                                         <tbody>
                                             <tr>
-                                                <td><input Class = "TextBox" name="TicketName"   maxlength="100"  size = "85" <% If Request("RequestTicketName") <> "" Then%> Value="<%Response.write(Request("RequestTicketName"))%>" <%end if%>/></td>                                            
+                                                <td><input class = "TextBox" name="TicketName"   maxlength="100"  size = "85" <% If Request("RequestTicketName") <> "" Then%> Value="<%Response.write(Request("RequestTicketName"))%>" <%end if%>/></td>                                            
 	                                            <td><%  Response.Write(BuildDynamicDropDown("ticket_priority", "PriorityDropDown", RequestTicketPriority))%> &nbsp;</td>
 	                                            <td><%  Response.Write(BuildDynamicDropDown("ticket_type", "TypeDropDown", request("RequestTicketType")))%> &nbsp;</td>     
 	                                            <td><%  Response.Write(BuildDynamicDropDown("Assigned", "AssignedToDropDown", request("RequestTicketAssignedTo")))%> &nbsp;</td>                                                 
@@ -440,7 +434,7 @@
                                             
                                         <%  if request("Edit") <> "Ticket" then %>                                           
 	                                            <td><%  if not(TicketsReader("tic_status") is dbnull.value) then Response.Write(GetLookupDetails(TicketsReader("tic_status"))) else Response.write("N/A")%> &nbsp;</td>
-	                                            <td><%  if not(TicketsReader("tic_priority") is dbnull.value) then Response.Write(GetLookupDetails(TicketsReader("tic_priority"))) else Response.write("N/A")%> &nbsp;</td>
+                                                <td <% PriorityColour(GetLookupDetails(TicketsReader("tic_priority")))%>><% If Not (TicketsReader("tic_priority") Is DBNull.Value) Then Response.Write(GetLookupDetails(TicketsReader("tic_priority"))) Else Response.Write("N/A")%> </td>                             
 	                                            <td><%  if not(TicketsReader("tic_assignedTo") is dbnull.value) then Response.Write(GetContactName(TicketsReader("tic_assignedTo"))) else Response.write("N/A")%> &nbsp;</td>
 	                                            <td><%  if not(TicketsReader("tic_typeId") is dbnull.value) then Response.Write(GetLookupDetails(TicketsReader("tic_typeId"))) else Response.write("N/A")%> &nbsp;</td>
                                         <%  else%>
@@ -599,20 +593,88 @@
                     </asp:View>
                     
                    
-               <%--<asp:View ID="View3" runat="server">
+               <%--<asp:View ID="View2" runat="server">
                     Pages
+                    </asp:View>--%>
+
+<%-- -------------------------------------------------------------------------------------------------------------------
+--------------------------------------------View 3 - Repository--------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------- --%>
+                    <asp:View ID="View3" runat="server">
+                    <%  if AllowAction("viewProjectRepository", request("project")) then %>
+                            <h1>Content Repository</h1>
+                            <h2>Description</h2>
+
+                        <%  Dim ProjectRepositoryConnection As SqlConnection
+                            Dim ProjectRepositoryCommand As SqlCommand
+                            Dim ProjectRepositoryReader As SqlDataReader
+                        
+                            Dim sql As String
+
+                            Dim GitFeatureId As Integer
+                            Dim x As Integer
+
+                            ProjectRepositoryConnection = New SqlConnection(System.Configuration.ConfigurationManager.ConnectionStrings("ProjectsConnection").ToString())
+                            ProjectRepositoryConnection.Open()
+			                
+                            sql = "Select * from features "
+                            sql = sql & " where feat_featureName = 'GitRepository'"
+			                
+                            ProjectRepositoryCommand = New SqlCommand(sql, ProjectRepositoryConnection)
+                            ProjectRepositoryReader = ProjectRepositoryCommand.ExecuteReader()
+		                                
+                            While ProjectRepositoryReader.Read()
+                                Response.Write(ProjectRepositoryReader("feat_description"))
+                                GitFeatureId = ProjectRepositoryReader("feat_id")
+                            End While
+                            
+                            ProjectRepositoryReader.Close()
+                            
+                            sql = "Select * from project_features "
+                            sql = sql & " where prof_proId = '" & Request("project") & "' "
+                            sql = sql & " and prof_featureId = '" & GitFeatureId & "'"
+                            sql = sql & " and prof_IsActive = 'True'"
+                            
+                            x = 0%>
+                            
+                            <h2>Content</h2>
+                            
+                        <%  ProjectRepositoryCommand = New SqlCommand(sql, ProjectRepositoryConnection)
+                            ProjectRepositoryReader = ProjectRepositoryCommand.ExecuteReader()
+		                                
+                            If ProjectRepositoryReader.HasRows Then
+                                While ProjectRepositoryReader.Read()
+                                    If Not (ProjectRepositoryReader("prof_description") Is DBNull.Value) Then
+                                        x = x + 1%>
+                                
+                                        <h3>Repository #<%Response.Write(x)%></h3><br />
+                                        <input class = "TextBox" name="RepositoryInformation<%response.write(x) %>" size = "85" <% If not(ProjectRepositoryReader("prof_description")is dbnull.value) Then%> value="<%Response.write(ProjectRepositoryReader("prof_description"))%>" <%end if%>/><br /><br />
+
+	                                    Added By: <%  If Not (ProjectRepositoryReader("prof_addedby") Is DBNull.Value) Then Response.Write(GetContactName(ProjectRepositoryReader("prof_addedby"))) Else Response.Write("N/A")%> <br />
+	                                    Added Date: <%  If Not (ProjectRepositoryReader("prof_addedDate") Is DBNull.Value) Then Response.Write(String.Format("{0:dd MMM yyy &nb\sp;&nb\sp;&nb\sp; Ti\me: h:mm tt}", ProjectRepositoryReader("prof_addedDate"))) Else Response.Write("N/A")%><br /><br />
+                                <%  End If
+                                End While
+                            End If
+
+                            if not(ProjectRepositoryReader.hasrows) or x = 0 then%>
+                                No Content Repositories avaliable.      
+                        <%  End If
+                            
+                            ProjectRepositoryReader.Close()
+                            ProjectRepositoryConnection.Close()%>
+                    <%  else %>
+                            You do not have permission to view the Content Repository. 
+                    <%  end if %>
                     </asp:View>
-                    <asp:View ID="View4" runat="server">
-                    Repo
-                    </asp:View>
-                    <asp:View ID="View5" runat="server">
+
+                    <%--<asp:View ID="View4" runat="server">
                     Features
                     </asp:View>--%>
                     
 <%-- -------------------------------------------------------------------------------------------------------------------
 --------------------------------------------View 6 - Roles--------------------------------------------------------------
 ------------------------------------------------------------------------------------------------------------------- --%>
-                    <asp:View ID="View6" runat="server">
+                    <asp:View ID="View5" runat="server">
                     <%  if AllowAction("viewProjectRelationships", request("project")) then %>
                     		<table width = "100%" border = "1">
                     			<thead>
@@ -686,7 +748,7 @@
 <%-- -------------------------------------------------------------------------------------------------------------------
 --------------------------------------------View 7 - Contact Us--------------------------------------------------------------
 ------------------------------------------------------------------------------------------------------------------- --%>
-                     <asp:View ID="View2" runat="server">
+                     <asp:View ID="View6" runat="server">
                 	<%  If HasFeatures("ContactUs", request("project")) = True then
                     		if AllowAction("viewProjectContactUs", request("project")) then %>
                     		

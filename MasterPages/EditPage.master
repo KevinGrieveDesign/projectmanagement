@@ -132,10 +132,17 @@
             {
                 background-color:#ADDFAD;
             }
+            
             .No
             {
                 background-color:pink;
             }
+            
+            .HighPriority
+            {
+                background-color:pink;
+                font:bold;                   
+            } 
         </style>
     </head>
     <body>  

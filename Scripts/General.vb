@@ -457,3 +457,26 @@ Sub LogAction(ByVal Action As String, Optional ByVal ProjectId As Integer = 0, O
 
     LogActionsConnection.Close()
 End Sub
+
+'Params
+'	Input: String, Optional Integer, Optional Integer, Optional Integer
+'	Output: N/A
+'
+'This is used to log what people are doing, when they are doing it and where
+
+
+Sub PriorityColour(ByVal Priority As String)
+    If Priority <> "" Then
+        Dim PriorityColorClass As String
+
+
+        If Priority = "Urgent" Or Priority = "Immediate" Then
+            PriorityColorClass = "HighPriority"
+        End If
+        '  Response.redirect(PriorityColorClass & "h" & Priority)
+        If PriorityColorClass <> "" Then
+
+            Response.write(" class = '" & PriorityColorClass & "'")
+        End If
+    End If
+End Sub
