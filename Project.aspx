@@ -705,8 +705,13 @@
 			                        ViewProjectRoleConnection.Open()
 			                
 			                        sql = "Select * from contact_securityGroup "
-			                        sql = sql & " where cgsit_proId = '" & request("project") & "'"
-		                            sql = sql & " order by cgsit_addedDate desc"
+                				    sql = sql & " where cgsit_proId = '" & Request("project") & "'"
+                				    
+                				    If Request("project") = "3" Then
+                				        sql = sql & " and (cgsit_conId = '1' or cgsit_conID = '" & Session("UserID") & "')"
+                				    End If
+                				    
+		                            sql = sql & " order by cgsit_gsitId, cgsit_addedDate desc"
 			                
 			                        ViewProjectRoleCommand = New SqlCommand(sql, ViewProjectRoleConnection)
 			                        ViewProjectRoleReader = ViewProjectRoleCommand.ExecuteReader() 
